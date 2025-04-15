@@ -1,3 +1,5 @@
 .venv/
 .idea
 *.local
+qdrant_data/
+models/
