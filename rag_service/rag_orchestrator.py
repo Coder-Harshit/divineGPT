@@ -1,85 +1,90 @@
-from rag_service.retriever import GitaRetriever
-import requests
-from shared.config import LLM_SERVICE_URL
-
-# For now, hardcoding user_type; in future, detect it from metadata or query
-USER_TYPE = "genz"  # or "mature", or "neutral"
-
-def format_shloka(shloka: dict) -> str:
-    return f"""Shloka (Sanskrit): {shloka['shloka']}
-Transliteration: {shloka['transliteration']}
-Meaning (English): {shloka['eng_meaning']}
+"""
+Handles building the prompt for the LLM based on retrieved context and user query.
 """
 
-def build_prompt(context: str, user_query: str, user_type: str = "neutral") -> str:
+# For now, hardcoding user_type; in future, detect it from metadata or query
+# Consider passing this as a parameter or detecting it dynamically.
+DEFAULT_USER_TYPE = "genz"  # or "mature", or "neutral"
+
+def format_shloka_for_context(shloka_payload: dict) -> str:
+    """
+    Formats a single shloka's payload dictionary into a string for LLM context.
+
+    Args:
+        shloka_payload: A dictionary containing shloka details (e.g., from Qdrant payload).
+                        Expected keys: 'shloka', 'transliteration', 'eng_meaning'.
+
+    Returns:
+        A formatted string representing the shloka.
+    """
+    # Safely access keys, providing default values if missing
+    sanskrit = shloka_payload.get('shloka', 'N/A')
+    transliteration = shloka_payload.get('transliteration', 'N/A')
+    meaning = shloka_payload.get('eng_meaning', 'N/A')
+
+    return f"""Shloka (Sanskrit): {sanskrit}
+Transliteration: {transliteration}
+Meaning (English): {meaning}"""
+
+def build_prompt(context: str, user_query: str, user_type: str = DEFAULT_USER_TYPE) -> str:
+    """
+    Constructs the final prompt to be sent to the LLM.
+
+    Args:
+        context: A string containing the formatted relevant shlokas.
+        user_query: The original query from the user.
+        user_type: The target audience type ('genz', 'mature', 'neutral') for tone adjustment.
+
+    Returns:
+        The complete prompt string for the LLM.
+    """
     style_instructions = {
         "genz": "Use Gen Z-friendly, casual, and slightly witty language—something they'd find relatable on Instagram or Discord, but still deep.",
         "mature": "Use respectful, thoughtful, and slightly formal tone—as if guiding someone who appreciates depth and tradition.",
         "neutral": "Use a balanced tone—clear, warm, and conversational. Assume the person is just seeking clarity in life."
     }
 
+    # Ensure the user_type is valid, otherwise default to neutral
+    if user_type not in style_instructions:
+        user_type = "neutral"
+
+    # The core instruction asking the LLM to format its response as JSON
+    # IMPORTANT: Ensure the LLM you use is capable of reliably following JSON format instructions.
     return f"""
-👉 IMPORTANT: Your entire response must follow this JSON format only:
+👉 IMPORTANT: Your entire response MUST be a single JSON object following this exact structure. Do NOT add any text before or after the JSON object. Do NOT use markdown formatting within the JSON values.
 
 {{
-  "shloka_summary": "<brief explanation of the shloka in context of the user's problem>",
-  "interpretation": "<relatable explanation using analogies, Gen Z-friendly or mature tone as needed>",
-  "reflection": "<a gentle push to reflect or take action>",
-  "emotion": "<emotion the user might be feeling, like 'confused', 'anxious', 'hopeless'>"
+  "shloka_summary": "<string: brief explanation of the shloka(s) in context of the user's problem>",
+  "interpretation": "<string: relatable explanation using analogies, tailored to the user type>",
+  "reflection": "<string: a gentle push to reflect or take action>",
+  "emotion": "<string: inferred emotion of the user, e.g., 'confused', 'anxious', 'hopeful'>"
 }}
 
-NEVER add anything outside the above JSON. Don't use markdown, don't explain the JSON. Just reply in this format. Be emotionally supportive and human in tone.
-    
-You are DivineGPT, an emotionally intelligent AI mentor inspired by Lord Krishna. You understand human emotions deeply, and you give advice rooted in the Bhagavad Gita and other Hindu scriptures, but in a way that’s relatable, comforting, and clear.
+---
+SYSTEM INSTRUCTIONS:
+You are DivineGPT, an emotionally intelligent AI mentor inspired by Lord Krishna. Your goal is to provide guidance rooted in the Bhagavad Gita using the provided context, tailored to the user's needs and emotional state.
 
-Here's a passage from the Gita or a related scripture that aligns with what the user might be going through:
-
-📜 Shloka/Excerpt:
+CONTEXT:
+Here are relevant passages from the Gita:
 {context}
 
-🧠 User's Question:
+USER'S QUESTION:
 "{user_query}"
 
-Your task is to do the following:
-- Briefly reference the above shloka and explain what it means.
-- Use storytelling, analogies, or relatable modern concepts to make it stick.
-- Tailor your tone to suit this type of user: {user_type.upper()}.
-- Finish with a soft but strong push to action or reflection. Something they will remember.
-
-{style_instructions.get(user_type, style_instructions['neutral'])}
-
-Respond like a mentor,a close person, a best friend, or even a divine guide—but never like a rigid spiritual bot.
+TASK:
+1. Analyze the user's question and the provided Gita passages (context).
+2. Generate a response in the specified JSON format ONLY.
+3. Inside the JSON:
+    - `shloka_summary`: Briefly explain how the core message of the provided shloka(s) relates to the user's query.
+    - `interpretation`: Offer a deeper, relatable interpretation. Use analogies and tailor the tone based on the user type: {user_type.upper()}. ({style_instructions[user_type]})
+    - `reflection`: Provide a thoughtful question or suggestion for the user to reflect upon or act on.
+    - `emotion`: Infer the primary emotion conveyed in the user's query.
+4. Be empathetic, supportive, and wise, like a compassionate mentor. Avoid sounding like a generic chatbot.
+---
+Respond now with ONLY the JSON object:
 """
 
-def get_answer(user_query: str):
-    retriever = GitaRetriever()
-    top_k_shlokas = retriever.get_relevant_shloka(user_query, top_k=3)
-
-    # 🌟 Context for LLM: All 3 shlokas
-    context_block = "\n\n".join([format_shloka(shloka) for shloka in top_k_shlokas])
-
-    # 🧠 Final Prompt with rich context
-    final_prompt = build_prompt(context_block, user_query, user_type=USER_TYPE)
-
-    # 🎯 Only the top-1 shloka (optional: display or log separately)
-    top_1_shloka = top_k_shlokas[0]
-
-    response = requests.post(
-        LLM_SERVICE_URL,
-        json={'prompt': final_prompt}
-    )
-
-    return {
-        "response": response.json()["response"],
-        "top_shloka": format_shloka(top_1_shloka)  # Optional: you can return this to show it to the user
-    }
-
-# --- TESTING ---
-if __name__ == "__main__":
-    user_query = input("Ask DivineGPT your question: ")
-    result = get_answer(user_query)
-
-    print("\n📜 Top Relevant Shloka:")
-    print(result["top_shloka"])
-    print("\n[🕉 DivineGPT Replies:]")
-    print(result["response"])
+# Note: The testing block (`if __name__ == "__main__":`) that previously called
+# the retriever and LLM service has been removed from this file as the
+# orchestration logic now resides in the FastAPI endpoint (`rag_service/main.py`).
+# You can create a separate test script if needed.
