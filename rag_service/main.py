@@ -6,6 +6,7 @@ from .schema import RAGServiceQuery # Assuming schema.py defines UserQuery(query
 from .retriever import GitaRetriever
 from .rag_orchestrator import build_prompt, format_shloka_for_context
 from shared.config import LLM_SERVICE_URL, RAG_SERVICE_PORT # Ensure these are correctly configured
+import demjson3
 
 app = FastAPI(
     title="DivineGPT - RAG Service",
@@ -54,7 +55,10 @@ def parse_llm_response(llm_output_str: str) -> dict:
         try:
             parsed_json = json.loads(raw_found_block)
             print("Successfully parsed JSON found within ```json block.")
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
+            parsed_json = demjson3.decode(raw_found_block)
+            print("Successfully parsed using demjson3 fallback.")
+        except demjson3.JSONDecodeError as e:
             error_message = f"Error decoding JSON found within ```json block: {e}"
             print(f"{error_message}. Block: {raw_found_block}")
             # Keep parsed_json as None to try the next method
@@ -65,13 +69,22 @@ def parse_llm_response(llm_output_str: str) -> dict:
         first_match = re.search(r'(\{.*?\})', llm_output_str, re.DOTALL)
         if first_match:
             raw_found_block = first_match.group(1)
+            # try:
+            #     parsed_json = json.loads(raw_found_block)
+            #     print("Successfully parsed first standalone JSON object found.")
+            # except json.JSONDecodeError as e:
+            #     error_message = f"Error decoding first standalone JSON object found: {e}"
+            #     print(f"{error_message}. Block: {raw_found_block}")
+                # Keep parsed_json as None
             try:
                 parsed_json = json.loads(raw_found_block)
-                print("Successfully parsed first standalone JSON object found.")
-            except json.JSONDecodeError as e:
-                error_message = f"Error decoding first standalone JSON object found: {e}"
+                print("Successfully parsed JSON found within ```json block.")
+            except json.JSONDecodeError:
+                parsed_json = demjson3.decode(raw_found_block)
+                print("Successfully parsed using demjson3 fallback.")
+            except demjson3.JSONDecodeError as e:
+                error_message = f"Error decoding JSON found within ```json block: {e}"
                 print(f"{error_message}. Block: {raw_found_block}")
-                # Keep parsed_json as None
         else:
              print("No standalone JSON object found either.")
 
@@ -216,6 +229,16 @@ async def get_status():
 @app.get("/")
 async def read_root():
     return {"message": "RAG Service Running", "port": RAG_SERVICE_PORT}
+
+@app.get("/debug-prompt")
+async def debug_prompt(query: str):
+    retrieved_payloads = shloka_retriever.get_relevant_shloka(user_query=query, top_k=3)
+    context_string = "\n\n---\n\n".join([format_shloka_for_context(p) for p in retrieved_payloads])
+    final_prompt = build_prompt(context=context_string, user_query=query)
+    return {"final_prompt": final_prompt}
+
+
+
 
 # Add other necessary imports and configurations (e.g., CORS middleware if needed)
 
