@@ -3,9 +3,6 @@ Handles logic (using model pipeline)
 """
 from .model import load_model_and_pipeline
 
-# Load the model and pipeline when the module is imported
-# This assumes the LLM service is relatively long-running.
-# If it's serverless/short-lived, you might adjust loading strategy.
 print("Initializing LLM pipeline...")
 generator = load_model_and_pipeline()
 print("LLM pipeline initialized.")
@@ -30,16 +27,24 @@ def generate_response(prompt: str) -> str:
         # Also added clean_up_tokenization_spaces=True as good practice
         outputs = generator(
             prompt,
-            max_new_tokens=4000,  # Adjusted slightly, ensure it's enough for JSON + content
-            do_sample=True,       # Re-enabled sampling for potentially better creativity
-            temperature=0.6,      # Adjusted temperature slightly
-            top_p=0.9,            # Added top_p sampling
-            return_full_text=False, # *** This is the main fix ***
+            max_new_tokens=4000,  
+            do_sample=True,       
+            temperature=0.7,      
+            top_p=0.92,           
+            top_k=50,
+            repetition_penalty=1.2,
+            return_full_text=False,
             clean_up_tokenization_spaces=True
         )
 
         generated_text = outputs[0]['generated_text']
         print(f"LLM generated text (first 100 chars): {generated_text[:100]}...")
+
+
+        # --- Removed JSON cleaning/validation logic ---
+        # Let the RAG service handle all parsing complexities.
+        # Just return the raw generated text, stripped of leading/trailing whitespace.
+
         return generated_text.strip() # Strip any leading/trailing whitespace
 
     except Exception as e:

@@ -16,10 +16,9 @@ class RetrievedShloka(BaseModel):
     word_meaning: Optional[str] = Field(None, description="Word-by-Word text meaning")
 
 class LLMStructuredResponse(BaseModel):
-    shloka_summary: str = Field(..., description="Breif explanation of the shloka(s) in context")
-    interpretation: str = Field(..., description="Relatable Interpretation tailored to the user")
-    reflection: str = Field(..., description="Question/Suggestion for the user to reflect on")
-    emotion: str = Field(..., description="Inferred Emotion of the user")
+    shloka: str = Field(..., description="Sanskrit shloka text relevant to the query")
+    meaning: str = Field(..., description="Simple translation of the shloka")
+    response: str = Field(..., description="Krishna's conversational guidance to the user")
 
 class RAGServiceResponse(BaseModel):
     user_query: str = Field(..., description="Query string")
@@ -31,6 +30,8 @@ class ServiceStatus(BaseModel):
     port: Optional[int] = Field(None, description="Service port")
     status: str = Field(..., description="Service status")
     details: Optional[str] = Field(None, description="Additional details about the service status")
+
+
 
 #
 # class UserQuery(BaseModel):
