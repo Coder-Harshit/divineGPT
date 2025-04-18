@@ -3,3 +3,5 @@
 *.local
 qdrant_data/
 models/
+node_modules/
+__pycache__/

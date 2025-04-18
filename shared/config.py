@@ -23,6 +23,7 @@ RAG_SERVICE_ROUTE = os.getenv("RAG_SERVICE_ROUTE", "/ask")
 LLM_SERVICE_PORT = int(os.getenv("LLM_SERVICE_PORT", 8000))  # Default port for LLM service
 RAG_SERVICE_PORT = int(os.getenv("RAG_SERVICE_PORT", 8001))  # Default port for RAG service
 GATEWAY_SERVICE_PORT = int(os.getenv("GATEWAY_SERVICE_PORT", 8002))  # Default port for RAG service
+T2S_SERVICE_PORT = int(os.getenv("T2S_SERVICE_PORT", 8003))
 
 # URLs
 LLM_SERVICE_URL = os.getenv("LLM_SERVICE_URL", f"http://{LLM_SERVICE_HOST}:{LLM_SERVICE_PORT}{LLM_SERVICE_ROUTE}")
