@@ -1,0 +1,36 @@
+name: Microservices Compose Test
+
+on:
+  push:
+    branches: [ "main", "deployment" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-services:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and Run Services with Docker Compose
+        run: |
+          docker compose -f docker-compose.yml up -d
+          sleep 20  # Give services time to boot
+
+      - name: Test RAG Service
+        run: curl --fail http://localhost:8001/status
+
+      - name: Test LLM Service
+        run: curl --fail http://localhost:8000/status
+
+      - name: Test T2S Service
+        run: curl --fail http://localhost:8003/
+
+      # # Optional: shut down after testing
+      # - name: Shutdown
+      #   run: docker compose down
