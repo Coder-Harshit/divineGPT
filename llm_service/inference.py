@@ -3,7 +3,7 @@ Handles logic (using model pipeline)
 """
 import requests
 from shared.config import GEMINI_API_KEY, USE_GEMINI, GEMINI_MODEL
-from .model import load_model_and_pipeline
+from llm_service.model import load_model_and_pipeline
 import google.generativeai as genai
 
 

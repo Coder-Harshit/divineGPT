@@ -9,8 +9,8 @@ import shared.config
 from shared.schema import RAGServiceQuery, RAGServiceResponse, LLMStructuredResponse
 from shared.config import RAG_SERVICE_PORT
 from shared.logger import get_logger
-from .retriever import GitaRetriever
-from .prompt_builder import build_prompt, format_shloka_for_context
+from rag_service.retriever import GitaRetriever
+from rag_service.prompt_builder import build_prompt, format_shloka_for_context
 
 app = FastAPI(
     title="DivineGPT - RAG Service",
