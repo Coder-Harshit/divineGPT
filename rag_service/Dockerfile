@@ -1,5 +1,5 @@
 # Builder stage
-FROM pytorch/pytorch:2.6.0-cuda12.6-cudnn9-runtime AS builder
+FROM python:3.13.3-slim-bullseye AS builder
 WORKDIR /app
 
 # Create and activate a virtual environment
@@ -7,8 +7,9 @@ RUN python -m venv /venv
 ENV PATH="/venv/bin:${PATH}"
 
 COPY rag_service/requirements.txt .
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir -r requirements.txt
-
+RUN pip install sentence-transformers
 
 # Final stage
 FROM python:3.13.3-alpine3.21
