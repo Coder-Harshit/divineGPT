@@ -29,4 +29,4 @@ COPY --chown=containeruser:containeruser ../shared/*.py /app/shared/
 EXPOSE 8003
 
 # Set entrypoint
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003"]
+CMD ["uvicorn", "t2s_service.main:app", "--host", "0.0.0.0", "--port", "8003"]

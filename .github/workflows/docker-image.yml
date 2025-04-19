@@ -22,14 +22,14 @@ jobs:
           docker compose -f docker-compose.yml up -d
           sleep 20  # Give services time to boot
 
-#      - name: Test LLM Service
-#        run: curl http://localhost:8000/status | grep -o "running"
-#
-#      - name: Test RAG Service
-#        run: curl http://localhost:8001/status | grep -o "running"
-#
-#      - name: Test T2S Service
-#        run: curl http://localhost:8003/status | grep -o "running"
+      - name: Test LLM Service
+        run: curl --fail http://localhost:8000/status
+
+      - name: Test RAG Service
+        run: curl --fail http://localhost:8001/status
+
+      - name: Test T2S Service
+        run: curl --fail http://localhost:8003/status
 
       # # Optional: shut down after testing
       # - name: Shutdown

@@ -27,4 +27,4 @@ COPY --chown=containeruser:containeruser rag_service/ /app/rag_service
 COPY --chown=containeruser:containeruser ../shared/datasets /app/shared/datasets
 COPY --chown=containeruser:containeruser ../shared/*.py /app/shared/
 EXPOSE 8001
-ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+ENTRYPOINT ["uvicorn", "rag_service.main:app", "--host", "0.0.0.0", "--port", "8001"]
