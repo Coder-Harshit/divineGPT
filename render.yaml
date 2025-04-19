@@ -3,7 +3,7 @@ services:
     name: divinegpt-rag_service
     env: docker
     repo: https://github.com/Coder-Harshit/divinegpt
-    dockerfilePath: ./rag_service/Dockerfile
+    dockerfilePath: rag_service/Dockerfile
     buildCommand: docker built -t divinegpt-rag_service .
     plan: free
     envVars:
@@ -14,7 +14,7 @@ services:
     name: divinegpt-llm_service
     env: docker
     repo: https://github.com/Coder-Harshit/divinegpt
-    dockerfilePath: ./llm_service/Dockerfile
+    dockerfilePath: llm_service/Dockerfile
     buildCommand: docker built -t divinegpt-llm_service .
     plan: free
     envVars:
@@ -25,7 +25,7 @@ services:
     name: divinegpt-t2s_service
     env: docker
     repo: https://github.com/Coder-Harshit/divinegpt
-    dockerfilePath: ./t2s_service/Dockerfile
+    dockerfilePath: t2s_service/Dockerfile
     buildCommand: docker built -t divinegpt-t2s_service .
     plan: free
     envVars:
