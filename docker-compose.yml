@@ -22,82 +22,82 @@ services:
       timeout: 5s
       retries: 3
 
-#  rag_service:
-#    build:
-#      dockerfile: rag_service/Dockerfile
-#    ports:
-#      - "8001:8001"
-#    networks:
-#      - app_network
-#    volumes:
-#      - ./shared:/app/shared
-#    environment:
-#      - RAG_SERVICE_PORT=8001
-#    depends_on:
-#      - llm_service
-#    restart:
-#      unless-stopped
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:8001/status"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
-#
-#  gateway:
-#    build:
-#      dockerfile: gateway/Dockerfile
-#    ports:
-#      - "8002:8002"
-#    networks:
-#      - app_network
-#    volumes:
-#      - ./shared:/app/shared
-#    environment:
-#      - GATEWAY_SERVICE_PORT=8002
-#    depends_on:
-#      - rag_service
-#      - t2s_service
-#      - llm_service
-#    restart:
-#      unless-stopped
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8002/status" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
-#
-#
-#  t2s_service:
-#    build:
-#      dockerfile: t2s_service/Dockerfile
-#    ports:
-#      - "8003:8003"
-#    networks:
-#      - app_network
-#    volumes:
-#      - ./shared:/app/shared
-#    environment:
-#      - T2S_SERVICE_PORT=8003
-#    restart:
-#      unless-stopped
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8003/status" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
-#
-#
-#  qdrant:
-#    image: qdrant/qdrant
-#    ports:
-#      - "6333:6333"
-#      - "6334:6334"
-#    networks:
-#      - app_network
-#    volumes:
-#      - qdrant_storage:/qdrant/storage
-#    restart:
-#      unless-stopped
-#
-#volumes:
-#  qdrant_storage:
+  rag_service:
+    build:
+      dockerfile: rag_service/Dockerfile
+    ports:
+      - "8001:8001"
+    networks:
+      - app_network
+    volumes:
+      - ./shared:/app/shared
+    environment:
+      - RAG_SERVICE_PORT=8001
+    depends_on:
+      - llm_service
+    restart:
+      unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  gateway:
+    build:
+      dockerfile: gateway/Dockerfile
+    ports:
+      - "8002:8002"
+    networks:
+      - app_network
+    volumes:
+      - ./shared:/app/shared
+    environment:
+      - GATEWAY_SERVICE_PORT=8002
+    depends_on:
+      - rag_service
+      - t2s_service
+      - llm_service
+    restart:
+      unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8002/status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+
+  t2s_service:
+    build:
+      dockerfile: t2s_service/Dockerfile
+    ports:
+      - "8003:8003"
+    networks:
+      - app_network
+    volumes:
+      - ./shared:/app/shared
+    environment:
+      - T2S_SERVICE_PORT=8003
+    restart:
+      unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8003/status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+
+  qdrant:
+    image: qdrant/qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    networks:
+      - app_network
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart:
+      unless-stopped
+
+volumes:
+  qdrant_storage:
