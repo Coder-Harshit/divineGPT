@@ -1,5 +1,5 @@
 # Builder stage
-FROM python:3.13.3-alpine3.21 AS builder
+FROM python:3.13-slim AS builder
 WORKDIR /app
 
 # Create and activate a virtual environment
