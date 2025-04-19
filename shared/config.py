@@ -8,9 +8,6 @@ MODEL_CACHE_DIR = os.getenv("MODEL_CACHE_DIR", f"{SHARED_ROOT}/models")
 DEFAULT_MODEL = "google/gemma-3-1B-it"
 DATASET_DIR = SHARED_ROOT / "datasets"
 
-QDRANT_PATH = os.getenv("QDRANT_PATH", f"{SHARED_ROOT}/qrand_data")
-
-
 # Hosts
 LLM_SERVICE_HOST = os.getenv("LLM_SERVICE_HOST", "localhost")
 RAG_SERVICE_HOST = os.getenv("RAG_SERVICE_HOST", "localhost")
@@ -34,3 +31,8 @@ RAG_SERVICE_URL = os.getenv("RAG_SERVICE_URL", f"http://{RAG_SERVICE_HOST}:{RAG_
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY","")
 USE_GEMINI = os.getenv("USE_GEMINI","True").lower() == "true"
 GEMINI_MODEL = "gemini-2.0-flash-lite"
+
+# Qdrant CONFIG
+QDRANT_URL = "https://aa5d2ed6-4c67-432c-99c0-8094cf311275.us-east-1-0.aws.cloud.qdrant.io:6333"
+QDRANT_PATH = os.getenv("QDRANT_URL", QDRANT_URL)
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", "")
