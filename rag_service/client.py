@@ -2,7 +2,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 from sentence_transformers import SentenceTransformer
 import pandas as pd
-from shared.config import DATASET_DIR, QDRANT_URL, QDRANT_API_KEY
+from shared.config import DATASET_DIR, QDRANT_URL, QDRANT_API_KEY, EMBEDDING_MODEL
 import os
 
 class QdrantGitaIndexer:
@@ -10,11 +10,12 @@ class QdrantGitaIndexer:
             self,
             collection_name: str = "divinegpt-gita",
             dataset_path: str = str(DATASET_DIR / 'bhagwad_gita.csv').replace("/", os.sep),
-            embedding_model_name:str = "all-MiniLM-L6-v2",
+            embedding_model_name:str = EMBEDDING_MODEL,
     ):
         self.client = QdrantClient(
             url=QDRANT_URL,
             api_key=QDRANT_API_KEY,
+            timeout=180,
         )
         self.embedding_model = SentenceTransformer(embedding_model_name)
         self.collection_name = collection_name

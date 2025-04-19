@@ -8,6 +8,9 @@ MODEL_CACHE_DIR = os.getenv("MODEL_CACHE_DIR", f"{SHARED_ROOT}/models")
 DEFAULT_MODEL = "google/gemma-3-1B-it"
 DATASET_DIR = SHARED_ROOT / "datasets"
 
+# EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "thenlper/gte-small")
+
 # Hosts
 LLM_SERVICE_HOST = os.getenv("LLM_SERVICE_HOST", "localhost")
 RAG_SERVICE_HOST = os.getenv("RAG_SERVICE_HOST", "localhost")
