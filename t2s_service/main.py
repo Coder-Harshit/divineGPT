@@ -34,3 +34,11 @@ async def speak(request: T2SRequest):
 @app.get("/")
 def root():
     return {"message": "T2S Service Running", "port": T2S_SERVICE_PORT}
+
+@app.get("/status")
+async def get_status():
+    return {
+        "service": "Text-2-Speech Service",
+        "port": T2S_SERVICE_PORT,
+        "status": "running",
+    }
