@@ -23,13 +23,13 @@ jobs:
           sleep 20  # Give services time to boot
 
       - name: Test LLM Service
-        run: curl http://localhost:8000/status
+        run: curl http://localhost:8000/status | grep -o "running"
 
       - name: Test RAG Service
-        run: curl http://localhost:8001/status
+        run: curl http://localhost:8001/status | grep -o "running"
 
       - name: Test T2S Service
-        run: curl http://localhost:8003/status
+        run: curl http://localhost:8003/status | grep -o "running"
 
       # # Optional: shut down after testing
       # - name: Shutdown
