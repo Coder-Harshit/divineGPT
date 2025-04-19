@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: divinegpt-rag_service
+    env: docker
+    repo: https://github.com/Coder-Harshit/divinegpt
+    dockerfilePath: rag_service/Dockerfile
+    buildCommand: docker built -t divinegpt-rag_service .
+    plan: free
+    envVars:
+      - key: RAG_SERVICE_PORT
+        value: "8001"
+
+  - type: web
+    name: divinegpt-llm_service
+    env: docker
+    repo: https://github.com/Coder-Harshit/divinegpt
+    dockerfilePath: llm_service/Dockerfile
+    buildCommand: docker built -t divinegpt-llm_service .
+    plan: free
+    envVars:
+      - key: LLM_SERVICE_PORT
+        value: "8000"
+
+  - type: web
+    name: divinegpt-t2s_service
+    env: docker
+    repo: https://github.com/Coder-Harshit/divinegpt
+    dockerfilePath: t2s_service/Dockerfile
+    buildCommand: docker built -t divinegpt-t2s_service .
+    plan: free
+    envVars:
+      - key: T2S_SERVICE_PORT
+        value: "8003"
