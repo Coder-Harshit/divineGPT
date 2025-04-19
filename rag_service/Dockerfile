@@ -9,7 +9,7 @@ ENV PATH="/venv/bin:${PATH}"
 COPY rag_service/requirements.txt .
 RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install sentence-transformers
+RUN pip install --no-cache-dir sentence-transformers
 
 # Final stage
 FROM python:3.13.3-alpine3.21
