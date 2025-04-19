@@ -2,10 +2,10 @@
 Responsible from loading the LLM model
 """
 
-import torch
-import os
-from pathlib import Path
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+# import torch
+# import os
+# from pathlib import Path
+# from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 from shared.config import MODEL_CACHE_DIR, DEFAULT_MODEL
 
 
