@@ -30,4 +30,4 @@ COPY --chown=containeruser:containeruser llm_service/ /app/llm_service
 #COPY --chown=containeruser:containeruser ../shared/models/ /app/shared/models
 COPY --chown=containeruser:containeruser ../shared/*.py /app/shared/
 EXPOSE 8000
-ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["uvicorn", "llm_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
