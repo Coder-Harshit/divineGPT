@@ -5,6 +5,7 @@ networks:
 services:
   llm_service:
     build:
+      context: .
       dockerfile: llm_service/Dockerfile
     ports:
       - "8000:8000"
@@ -24,6 +25,7 @@ services:
 
   rag_service:
     build:
+      context: .
       dockerfile: rag_service/Dockerfile
     ports:
       - "8001:8001"
@@ -45,6 +47,7 @@ services:
 
   gateway:
     build:
+      context: .
       dockerfile: gateway/Dockerfile
     ports:
       - "8002:8002"
@@ -69,6 +72,7 @@ services:
 
   t2s_service:
     build:
+      context: .
       dockerfile: t2s_service/Dockerfile
     ports:
       - "8003:8003"
