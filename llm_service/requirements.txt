@@ -1,4 +1,5 @@
-torch
-transformers
 fastapi
-uvicorn
+torch
+requests
+transformers
+google_generativeai

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from shared.schema import LLMServiceRequest, LLMServiceResponse
 from shared.config import LLM_SERVICE_PORT
 from shared.logger import get_logger
-from llm_service.inference import generate_response
+from .inference import generate_response
 app = FastAPI(title="DivineGPT - LLM Service")
 logger = get_logger("LLM Service")
 

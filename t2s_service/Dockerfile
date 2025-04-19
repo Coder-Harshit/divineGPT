@@ -1,22 +1,29 @@
-# Use official Python image
-FROM python:3.13-slim
-
-RUN pip install --upgrade pip
-
-# Set working directory inside the container
+# Builder stage
+FROM python:3.13.3-alpine3.21 AS builder
 WORKDIR /app
 
-# Copy microservice code into the container
-COPY t2s_service/ /app
+# Create
+RUN python -m venv /venv
+ENV PATH="/venv/bin:${PATH}"
 
-# Install shared module
-COPY ../shared /app/shared
+COPY t2s_service/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install dependencies
-#RUN apt-get update && apt-get install -y ffmpeg && \
-#    pip install --no-cache-dir -r requirements.txt
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Final stage
+FROM python:3.13.3-alpine3.21
+WORKDIR /app
+RUN pip install --upgrade pip
+RUN adduser --disabled-password --gecos "" containeruser
+USER containeruser
+
+# Set the PATH to include the user's local bin directory
+ENV PATH="/home/containeruser/.local/bin:${PATH}"
+
+COPY --chown=containeruser:containeruser --from=builder /venv /venv
+ENV PATH="/venv/bin:${PATH}"
+
+COPY --chown=containeruser:containeruser t2s_service/ /app/t2s_service
+COPY --chown=containeruser:containeruser ../shared/*.py /app/shared/
 
 # Expose FastAPI default port
 EXPOSE 8003
