@@ -6,14 +6,25 @@ WORKDIR /app
 RUN python -m venv /venv
 ENV PATH="/venv/bin:${PATH}"
 
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential gcc \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY rag_service/requirements.txt .
 RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir sentence-transformers
 
 # Final stage
-FROM python:3.13.3-alpine3.21
+FROM python:3.13.3-slim-bullseye
 WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip
 RUN adduser --disabled-password --gecos "" containeruser
 USER containeruser
