@@ -37,6 +37,7 @@ services:
       - RAG_SERVICE_PORT=8001
     depends_on:
       - llm_service
+      - qdrant
     restart:
       unless-stopped
     healthcheck:
