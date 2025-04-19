@@ -23,27 +23,29 @@ def generate_response(prompt: str) -> str:
     """
     if USE_GEMINI:
         return call_gemini(prompt)
-
-    if not generator:
-        return "Error: LLM pipeline not ready."
-
-    try:
-        outputs = generator(
-            prompt,
-            max_new_tokens=4000,  
-            do_sample=True,       
-            temperature=0.7,      
-            top_p=0.92,           
-            top_k=50,
-            repetition_penalty=1.2,
-            return_full_text=False,
-            clean_up_tokenization_spaces=True
-        )
-
-        return outputs[0]['generated_text'].strip()
-
-    except Exception as e:
-        return f"Error: LLM generation failed. Details: {str(e)}"
+    else:
+        return "ERROR: Fallback local model removed"
+    #
+    # if not generator:
+    #     return "Error: LLM pipeline not ready."
+    #
+    # try:
+    #     outputs = generator(
+    #         prompt,
+    #         max_new_tokens=4000,
+    #         do_sample=True,
+    #         temperature=0.7,
+    #         top_p=0.92,
+    #         top_k=50,
+    #         repetition_penalty=1.2,
+    #         return_full_text=False,
+    #         clean_up_tokenization_spaces=True
+    #     )
+    #
+    #     return outputs[0]['generated_text'].strip()
+    #
+    # except Exception as e:
+    #     return f"Error: LLM generation failed. Details: {str(e)}"
 
 def call_gemini(prompt: str) -> str:
     try:
