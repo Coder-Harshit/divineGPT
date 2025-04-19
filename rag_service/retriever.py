@@ -1,16 +1,17 @@
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
+from shared.config import QDRANT_URL, QDRANT_API_KEY
 
 class GitaRetriever:
     def __init__(
         self,
         collection_name: str = "divinegpt-gita",
         embedding_model_name: str = "all-MiniLM-L6-v2",
-        path: str = './qdrant_data',
-        host: str = "localhost",
-        port: int = 6333,
     ):
-        self.client=QdrantClient(path=path)
+        self.client=QdrantClient(
+            url=QDRANT_URL,
+            api_key=QDRANT_API_KEY,
+        )
         self.embedding_model = SentenceTransformer(embedding_model_name)
         self.collection_name = collection_name
 

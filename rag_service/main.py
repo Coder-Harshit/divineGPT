@@ -5,7 +5,7 @@ import demjson3
 import requests
 from fastapi import FastAPI, HTTPException
 
-import shared.config
+# import shared.config
 from shared.schema import RAGServiceQuery, RAGServiceResponse, LLMStructuredResponse
 from shared.config import RAG_SERVICE_PORT
 from shared.logger import get_logger
