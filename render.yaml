@@ -3,7 +3,7 @@ services:
     name: divinegpt-rag_service
     env: docker
     repo: https://github.com/Coder-Harshit/divinegpt
-    dockerfile: ./rag_service/Dockerfile
+    dockerfilePath: ./rag_service/Dockerfile
     buildCommand: docker built -t divinegpt-rag_service .
     startCommand: uvicorn main:app --host 0.0.0.0 --port 8001
     plan: free
@@ -15,7 +15,7 @@ services:
     name: divinegpt-llm_service
     env: docker
     repo: https://github.com/Coder-Harshit/divinegpt
-    dockerfile: ./llm_service/Dockerfile
+    dockerfilePath: ./llm_service/Dockerfile
     buildCommand: docker built -t divinegpt-llm_service .
     startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
     plan: free
@@ -27,7 +27,7 @@ services:
     name: divinegpt-t2s_service
     env: docker
     repo: https://github.com/Coder-Harshit/divinegpt
-    dockerfile: ./t2s_service/Dockerfile
+    dockerfilePath: ./t2s_service/Dockerfile
     buildCommand: docker built -t divinegpt-t2s_service .
     startCommand: uvicorn main:app --host 0.0.0.0 --port 8003
     plan: free
