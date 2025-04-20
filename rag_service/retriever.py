@@ -1,6 +1,8 @@
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
-from shared.config import EMBEDDING_MODEL
+from shared.config import EMBEDDING_MODEL, QDRANT_URL, QDRANT_API_KEY
+
+
 class GitaRetriever:
     def __init__(
         self,
@@ -9,8 +11,11 @@ class GitaRetriever:
         embedding_model_name: str = EMBEDDING_MODEL,
     ):
         self.client=QdrantClient(
-            host="localhost",
-            port=6333
+            # host="localhost",
+            # port=6333
+            url=QDRANT_URL,
+            api_key=QDRANT_API_KEY,
+            timeout=60,
         )
         self.embedding_model = SentenceTransformer(embedding_model_name)
         self.collection_name = collection_name
