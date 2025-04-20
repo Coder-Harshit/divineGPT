@@ -1,7 +1,5 @@
 import requests
-from shared.config import T2S_SERVICE_PORT
-
-T2S_SERVICE_URL = f"http://localhost:{T2S_SERVICE_PORT}/speak"
+from shared.config import T2S_SERVICE_URL
 
 def request_tts_audio(text: str, lang: str = "en") -> bytes:
     """

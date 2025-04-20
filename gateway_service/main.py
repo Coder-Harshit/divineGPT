@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException
-from shared.config import GATEWAY_SERVICE_PORT, RAG_SERVICE_PORT
+from shared.config import RAG_SERVICE_URL, GATEWAY_SERVICE_PORT
 from shared.schema import RAGServiceQuery, RAGServiceResponse
 from shared.logger import get_logger
 import httpx
@@ -15,8 +15,6 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all methods
     allow_headers=["*"],  # Allow all headers
 )
-
-RAG_SERVICE_URL = f"http://localhost:{RAG_SERVICE_PORT}"
 
 @app.post("/ask", response_model=RAGServiceResponse)
 async def gateway_ask(request: Request):

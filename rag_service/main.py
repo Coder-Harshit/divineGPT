@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException
 
 # import shared.config
 from shared.schema import RAGServiceQuery, RAGServiceResponse, LLMStructuredResponse
-from shared.config import RAG_SERVICE_PORT
+from shared.config import RAG_SERVICE_PORT, LLM_SERVICE_URL
 from shared.logger import get_logger
 from rag_service.retriever import GitaRetriever
 from rag_service.prompt_builder import build_prompt, format_shloka_for_context
@@ -110,7 +110,7 @@ async def ask_question(user_query: RAGServiceQuery):
     final_prompt = build_prompt(context=context_string, user_query=user_query.query, user_type=user_query.user_type)
 
     response = requests.post(
-        f"http://localhost:{shared.config.LLM_SERVICE_PORT}/generate",
+        f"{LLM_SERVICE_URL}/generate",
         json={"prompt": final_prompt},
         timeout=180,
     ).json()
