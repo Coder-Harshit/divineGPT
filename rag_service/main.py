@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException
 
 # import shared.config
 from shared.schema import RAGServiceQuery, RAGServiceResponse, LLMStructuredResponse
-from shared.config import RAG_SERVICE_PORT, LLM_SERVICE_URL
+from shared.config import RAG_SERVICE_PORT, LLM_SERVICE_URL, QDRANT_URL, QDRANT_API_KEY, EMBEDDING_MODEL
 from shared.logger import get_logger
 from rag_service.retriever import GitaRetriever
 from rag_service.prompt_builder import build_prompt, format_shloka_for_context
@@ -27,7 +27,9 @@ FALLBACK_RESPONSE = {
     "response": "My dear friend, I sense your question is important, but there seems to be a temporary challenge in how I'm processing it. Just as the Gita teaches us about perseverance through obstacles, I encourage you to try asking again. Sometimes the divine timing requires patience. The wisdom you seek is worth the effort. I'm here ready to guide you when you're ready to rephrase your question."
 }
 
-
+print(f"[DEBUG] QDRANT_URL: {QDRANT_URL}")
+print(f"[DEBUG] QDRANT_API_KEY: {QDRANT_API_KEY[:5]}****")
+print(f"[DEBUG] EMBEDDING_MODEL: {EMBEDDING_MODEL}")
 
 # --- Dependency Injection ---
 try:
