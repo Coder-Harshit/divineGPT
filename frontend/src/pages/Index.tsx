@@ -82,7 +82,7 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800"
+              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20"
             >
               <div className="h-12 w-12 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center mb-5">
                 <MessageCircle className="h-6 w-6 text-divine-600 dark:text-divine-400" />
@@ -98,7 +98,7 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800"
+              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20"
             >
               <div className="h-12 w-12 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center mb-5">
                 <BookOpen className="h-6 w-6 text-divine-600 dark:text-divine-400" />
@@ -114,7 +114,7 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800"
+              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20"
             >
               <div className="h-12 w-12 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center mb-5">
                 <Heart className="h-6 w-6 text-divine-600 dark:text-divine-400" />

@@ -38,18 +38,18 @@ const Scriptures = () => {
       description: 'The journey of Lord Rama',
       icon: <BookOpen className="h-6 w-6" />
     },
-    { 
-      id: 'upanishads', 
-      name: 'Upanishads', 
-      description: 'Philosophical texts that define the core of Hinduism',
-      icon: <Book className="h-6 w-6" />
-    },
-    { 
-      id: 'vedas', 
-      name: 'Vedas', 
-      description: 'The oldest scriptures of Hinduism',
-      icon: <BookOpen className="h-6 w-6" />
-    },
+    // { 
+    //   id: 'upanishads', 
+    //   name: 'Upanishads', 
+    //   description: 'Philosophical texts that define the core of Hinduism',
+    //   icon: <Book className="h-6 w-6" />
+    // },
+    // { 
+    //   id: 'vedas', 
+    //   name: 'Vedas', 
+    //   description: 'The oldest scriptures of Hinduism',
+    //   icon: <BookOpen className="h-6 w-6" />
+    // },
   ];
 
   const scriptures: ScriptureItem[] = [
@@ -69,34 +69,34 @@ const Scriptures = () => {
       verses: 24000,
       chapters: 500
     },
-    {
-      id: 'upanishad-1',
-      title: 'Brihadaranyaka Upanishad',
-      category: 'upanishads',
-      description: 'One of the oldest Upanishads, a key scripture of Hinduism. It is associated with the Shukla Yajurveda and includes three sections: Madhu Kanda, Muni Kanda, and Khila Kanda.',
-      chapters: 6
-    },
-    {
-      id: 'upanishad-2',
-      title: 'Chandogya Upanishad',
-      category: 'upanishads',
-      description: 'A Sanskrit text embedded in the Chandogya Brahmana of the Sama Veda. It is one of the oldest Upanishads, discussing meditation, ethics, and the nature of reality.',
-      chapters: 8
-    },
-    {
-      id: 'veda-1',
-      title: 'Rig Veda',
-      category: 'vedas',
-      description: 'An ancient Indian collection of Vedic Sanskrit hymns, one of the four sacred canonical texts of Hinduism known as the Vedas.',
-      verses: 10600
-    },
-    {
-      id: 'veda-2',
-      title: 'Sama Veda',
-      category: 'vedas',
-      description: 'The Veda of melodies and chants, an ancient Vedic Sanskrit text that is one of the four Vedas, the core text of Hinduism.',
-      verses: 1875
-    },
+    // {
+    //   id: 'upanishad-1',
+    //   title: 'Brihadaranyaka Upanishad',
+    //   category: 'upanishads',
+    //   description: 'One of the oldest Upanishads, a key scripture of Hinduism. It is associated with the Shukla Yajurveda and includes three sections: Madhu Kanda, Muni Kanda, and Khila Kanda.',
+    //   chapters: 6
+    // },
+    // {
+    //   id: 'upanishad-2',
+    //   title: 'Chandogya Upanishad',
+    //   category: 'upanishads',
+    //   description: 'A Sanskrit text embedded in the Chandogya Brahmana of the Sama Veda. It is one of the oldest Upanishads, discussing meditation, ethics, and the nature of reality.',
+    //   chapters: 8
+    // },
+    // {
+    //   id: 'veda-1',
+    //   title: 'Rig Veda',
+    //   category: 'vedas',
+    //   description: 'An ancient Indian collection of Vedic Sanskrit hymns, one of the four sacred canonical texts of Hinduism known as the Vedas.',
+    //   verses: 10600
+    // },
+    // {
+    //   id: 'veda-2',
+    //   title: 'Sama Veda',
+    //   category: 'vedas',
+    //   description: 'The Veda of melodies and chants, an ancient Vedic Sanskrit text that is one of the four Vedas, the core text of Hinduism.',
+    //   verses: 1875
+    // },
   ];
 
   const filteredScriptures = scriptures.filter(scripture => {
@@ -180,7 +180,7 @@ const Scriptures = () => {
                 filteredScriptures.map((scripture) => (
                   <div
                     key={scripture.id}
-                    className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 hover:border-divine-300 dark:hover:border-divine-700 transition-all"
+                    className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 hover:border-divine-300 dark:hover:border-divine-700 transition-all duration-300 hover:shadown-lg dark:hover:bg-divine-900/20"
                   >
                     <h3 className="text-xl font-sanskrit font-semibold mb-2">{scripture.title}</h3>
                     
