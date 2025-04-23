@@ -20,13 +20,16 @@ const About = () => {
               <h1 className="text-4xl font-sanskrit font-bold mb-6 text-center">
                 About <span className="divine-text">DivineGPT</span>
               </h1>
-              <div className="glass-card p-6 md:p-8 rounded-xl border border-divine-100 dark:border-divine-800 mb-10">
+              <div className="glass-card p-6 md:p-8 rounded-xl border border-divine-100 dark:border-divine-800 mb-10 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20">
                 <h2 className="text-2xl font-sanskrit font-semibold mb-4">Our Mission</h2>
                 <p className="text-lg mb-6">
-                  DivineGPT was created with a singular purpose: to make the timeless wisdom of Hindu scriptures accessible and applicable to modern life challenges. We believe that the emotional and spiritual guidance found in these ancient texts can provide solace, direction, and clarity in our complex world.
+                  DivineGPT was created with a singular purpose: to make the timeless wisdom of sacred Hindu scriptures accessible and applicable to modern life challenges. We believe that the emotional and spiritual guidance found in these ancient texts can provide motivation, direction, and clarity in our complex world.
+                </p>
+                <p className="text-lg mb-6">
+                  By combining artificial intelligence with deep textual understanding of sacred texts including, but not limited to, The Bhagavad Gita, The Ramayana, we've created a platform that delivers personalized spiritual guidance in a conversational format.
                 </p>
                 <p className="text-lg">
-                  By combining artificial intelligence with deep textual understanding of the Bhagavad Gita, Ramayana, Upanishads, and other sacred Hindu texts, we've created a platform that delivers personalized spiritual guidance in a conversational format.
+                  By being not only your personal mentor but also the best friend, DivineGPT is here to help you navigate life's challenges with wisdom and compassion. Whether you're seeking advice on relationships, career choices, or personal growth, our AI is designed to provide insights that resonate with your unique situation.
                 </p>
               </div>
             </motion.div>
@@ -38,7 +41,7 @@ const About = () => {
             >
               <h2 className="text-2xl font-sanskrit font-semibold mb-6">What Makes Us Different</h2>
               <div className="space-y-6 mb-10">
-                <div className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800">
+                <div className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20">
                   <div className="flex items-start">
                     <div className="flex-shrink-0 h-10 w-10 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center text-divine-600 dark:text-divine-400">
                       <BookOpen className="h-5 w-5" />
@@ -52,7 +55,7 @@ const About = () => {
                   </div>
                 </div>
                 
-                <div className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800">
+                <div className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20">
                   <div className="flex items-start">
                     <div className="flex-shrink-0 h-10 w-10 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center text-divine-600 dark:text-divine-400">
                       <Heart className="h-5 w-5" />
@@ -66,7 +69,7 @@ const About = () => {
                   </div>
                 </div>
                 
-                <div className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800">
+                <div className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20">
                   <div className="flex items-start">
                     <div className="flex-shrink-0 h-10 w-10 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center text-divine-600 dark:text-divine-400">
                       <MessageCircle className="h-5 w-5" />
@@ -88,7 +91,7 @@ const About = () => {
               transition={{ delay: 0.6, duration: 0.5 }}
             >
               <h2 className="text-2xl font-sanskrit font-semibold mb-6">Our Approach</h2>
-              <div className="glass-card p-6 md:p-8 rounded-xl border border-divine-100 dark:border-divine-800 mb-10">
+              <div className="glass-card p-6 md:p-8 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20 mb-10">
                 <p className="mb-4">
                   DivineGPT approaches spiritual guidance with respect for the profound depth of Hindu scriptures. We recognize that these texts contain layers of meaning—from straightforward moral guidance to complex philosophical insights.
                 </p>
@@ -110,7 +113,7 @@ const About = () => {
               </div>
               
               <h2 className="text-2xl font-sanskrit font-semibold mb-6">Join Us on This Journey</h2>
-              <div className="glass-card p-6 md:p-8 rounded-xl border border-divine-100 dark:border-divine-800">
+              <div className="glass-card p-6 md:p-8 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20">
                 <p className="mb-4">
                   DivineGPT is more than just an AI chatbot—it's a companion on your spiritual journey. We're constantly improving and expanding our understanding of these sacred texts to better serve your needs.
                 </p>

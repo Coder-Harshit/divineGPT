@@ -20,8 +20,8 @@ const Footer = () => {
               <ul className="space-y-2 text-sm">
                 <li><a href="#" className="text-muted-foreground hover:text-divine-600 dark:hover:text-divine-400">Bhagavad Gita</a></li>
                 <li><a href="#" className="text-muted-foreground hover:text-divine-600 dark:hover:text-divine-400">Ramayana</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-divine-600 dark:hover:text-divine-400">Upanishads</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-divine-600 dark:hover:text-divine-400">Vedas</a></li>
+                {/* <li><a href="#" className="text-muted-foreground hover:text-divine-600 dark:hover:text-divine-400">Upanishads</a></li> */}
+                {/* <li><a href="#" className="text-muted-foreground hover:text-divine-600 dark:hover:text-divine-400">Vedas</a></li> */}
               </ul>
             </div>
             <div>

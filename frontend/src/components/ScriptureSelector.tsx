@@ -14,9 +14,9 @@ const ScriptureSelector = ({ onSelect, selected }: ScriptureSelectorProps) => {
     { id: 'all', name: 'All Scriptures' },
     { id: 'bhagavad-gita', name: 'Bhagavad Gita' },
     { id: 'ramayana', name: 'Ramayana' },
-    { id: 'mahabharata', name: 'Mahabharata' },
-    { id: 'upanishads', name: 'Upanishads' },
-    { id: 'vedas', name: 'Vedas' },
+    // { id: 'mahabharata', name: 'Mahabharata' },
+    // { id: 'upanishads', name: 'Upanishads' },
+    // { id: 'vedas', name: 'Vedas' },
   ];
 
   const handleSelect = (id: string) => {

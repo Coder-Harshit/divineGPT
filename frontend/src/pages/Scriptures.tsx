@@ -140,7 +140,7 @@ const Scriptures = () => {
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
-                  className={`glass-card p-4 rounded-xl border transition-all ${
+                  className={`glass-card p-4 rounded-xl border transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20 ${
                     selectedCategory === category.id
                       ? 'border-divine-400 dark:border-divine-600 bg-divine-50/30 dark:bg-divine-900/30'
                       : 'border-divine-100 dark:border-divine-800 hover:border-divine-300 dark:hover:border-divine-700'
