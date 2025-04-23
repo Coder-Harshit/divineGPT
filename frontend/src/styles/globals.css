@@ -125,7 +125,7 @@
 /*}*/
 
 @import url('https://fonts.googleapis.com/css2?family=Hubot+Sans:ital,wght@0,200..900;1,200..900&display=swap');
-@import "tailwindcss";
+@import "../../node_modules/tailwindcss/dist/lib.d.mts";
 
 :root {
   /* Primary Colors - Spiritual Purple Spectrum */
