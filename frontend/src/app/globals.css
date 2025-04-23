@@ -1,0 +1,110 @@
+/*@import "tailwindcss";*/
+
+/*:root {*/
+/*  --background: #ffffff;*/
+/*  --foreground: #171717;*/
+/*}*/
+
+/*@theme inline {*/
+/*  --color-background: var(--background);*/
+/*  --color-foreground: var(--foreground);*/
+/*  --font-sans: var(--font-geist-sans);*/
+/*  --font-mono: var(--font-geist-mono);*/
+/*}*/
+
+/*@media (prefers-color-scheme: dark) {*/
+/*  :root {*/
+/*    --background: #0a0a0a;*/
+/*    --foreground: #ededed;*/
+/*  }*/
+/*}*/
+
+/*body {*/
+/*  background: var(--background);*/
+/*  color: var(--foreground);*/
+/*  font-family: Arial, Helvetica, sans-serif;*/
+/*}*/
+
+@import url('https://fonts.googleapis.com/css2?family=Hubot+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+@import "tailwindcss";
+
+
+:root {
+  /* Primary Colors - Spiritual Purple Spectrum */
+  --primary-deep: #5e35b1;     /* Deep spiritual purple */
+  --primary: #7f5af0;          /* Main purple */
+  --primary-light: #a78bfa;    /* Light purple */
+  --primary-lighter: #be9ce7;  /* Softer purple */
+
+  /* Divine Accent Colors */
+  --accent-saffron: #FF9800;   /* Spiritual saffron - sacred color */
+  --accent-gold: #FFD700;      /* Divine gold - knowledge/wisdom */
+  --accent-blue: #4FC3F7;      /* Krishna blue - divine consciousness */
+  --accent-pink: #f43f5e;      /* Pink - devotion */
+  --accent-yellow: #facc15;    /* Yellow */
+
+  /* Background Colors - More Distinct */
+  --bg-light: #FFFCF6;         /* Warmer off-white for light mode */
+  --bg-dark: #121027;          /* Deep cosmic night for dark mode */
+
+  /* Card/Component Colors */
+  --card-light: #ffffff;
+  --card-dark: #1e1a3a;        /* Deeper purple-tinted dark */
+  --card-gradient-light: linear-gradient(to bottom right, #FFFCF6, #F3E9D7);  /* Subtle papyrus feel */
+  --card-gradient-dark: linear-gradient(to bottom right, #1e1a3a, #31275e);   /* Cosmic gradient */
+
+  /* Text Colors */
+  --text-primary-light: #2D3748;
+  --text-primary-dark: #F7FAFC;
+  --text-secondary-light: #4A5568;
+  --text-secondary-dark: #CBD5E0;
+  --text-accent-light: #FF9800; /* Saffron accent */
+  --text-accent-dark: #FFD700;  /* Gold accent */
+
+  --background: var(--bg-light);
+  --foreground: var(--text-primary-light);
+
+  /*--font-primary: 'Hubot Sans', sans-serif;*/
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  /*--font-sans: var(--font-geist-sans);*/
+  --font-sans: var(--font-primary);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--bg-dark);
+    --foreground: var(--text-primary-dark);
+  }
+}
+
+/* Add Hubot Sans utility class */
+.font-hubot {
+  font-family: 'Hubot Sans', sans-serif;
+}
+
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-primary, var(--font-sans, Arial, Helvetica, sans-serif));
+}
+
+/* Add some typography enhancements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary), sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.divine-heading {
+  font-weight: 700;
+  background: linear-gradient(to right, var(--accent-saffron), var(--accent-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}

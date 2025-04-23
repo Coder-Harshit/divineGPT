@@ -1,0 +1,1 @@
+for SVGs, icons, images
