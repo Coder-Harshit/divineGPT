@@ -37,7 +37,6 @@
 "use client"
 
 import { motion } from "framer-motion"
-import {LucideArrowDown} from "lucide-react";
 
 export default function Hero() {
     return (

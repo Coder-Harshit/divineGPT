@@ -179,7 +179,7 @@
   --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.18);
   --shadow: var(--shadow-light);
 
-  --font-primary: 'Huboto Sans', system-ui, sans-serif;
+  --font-primary: 'Hubot Sans', system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
