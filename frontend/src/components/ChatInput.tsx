@@ -48,7 +48,7 @@ const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
         />
         <Button
           type="submit"
-          className="absolute bottom-3 right-3 text-black dark:text-white p-2 rounded-lg h-auto"
+          className="absolute bottom-3 right-3 text-white p-2 rounded-lg h-auto"
           disabled={!message.trim() || isLoading}
           variant="divine"
           size="sm"

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
@@ -11,11 +10,12 @@ interface ChatMessageProps {
   scriptureReference?: {
     text: string;
     source: string;
+    transliteration?: string;
   };
 }
 
 const ChatMessage = ({ role, content, timestamp, scriptureReference }: ChatMessageProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const messageRef = useRef<HTMLDivElement>(null);
   
   const isUser = role === 'user';
@@ -27,11 +27,13 @@ const ChatMessage = ({ role, content, timestamp, scriptureReference }: ChatMessa
   const bubbleVariants = {
     hidden: { 
       opacity: 0, 
-      y: 20 
+      y: 20,
+      scale: 0.95
     },
     visible: { 
       opacity: 1, 
       y: 0,
+      scale: 1,
       transition: {
         duration: 0.4,
         ease: "easeOut"
@@ -67,25 +69,42 @@ const ChatMessage = ({ role, content, timestamp, scriptureReference }: ChatMessa
             <div className="text-sm md:text-base whitespace-pre-wrap">{content}</div>
             
             {scriptureReference && (
-              <div className="mt-3 pt-3 border-t border-divine-200/30 dark:border-divine-700/30">
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="mt-3 pt-3 border-t border-divine-200/30 dark:border-divine-700/30"
+              >
                 <button 
-                  className="text-xs font-medium text-divine-300 dark:text-divine-400 hover:text-divine-200 dark:hover:text-divine-300 mb-1"
+                  className="text-xs font-medium text-divine-300 dark:text-divine-400 hover:text-divine-200 dark:hover:text-divine-300 mb-2"
                   onClick={() => setIsExpanded(!isExpanded)}
                 >
                   {isExpanded ? 'Hide Scripture Reference' : 'View Scripture Reference'}
                 </button>
                 
                 {isExpanded && (
-                  <div className="mt-2 text-sm bg-white/10 dark:bg-black/10 p-3 rounded-lg">
-                    <blockquote className="italic text-divine-100 dark:text-divine-200">
-                      "{scriptureReference.text}"
-                    </blockquote>
-                    <div className="mt-1 text-xs text-divine-300 dark:text-divine-400">
-                      — {scriptureReference.source}
+                  <motion.div 
+                    initial={{ y: -10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-2"
+                  >
+                    <div className="bg-white/10 dark:bg-black/10 p-4 rounded-lg">
+                      <blockquote className="font-sanskrit text-sm text-divine-100 dark:text-divine-200 mb-3">
+                        {scriptureReference.text}
+                      </blockquote>
+                      <div className="text-sm text-divine-200 dark:text-divine-300 mb-2">
+                        {scriptureReference.source}
+                      </div>
+                      {scriptureReference.transliteration && (
+                        <div className="text-xs text-divine-300/80 dark:text-divine-400/80 italic">
+                          {scriptureReference.transliteration}
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
             )}
           </div>
           

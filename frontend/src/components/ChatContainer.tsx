@@ -1,10 +1,12 @@
-
 import { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, ArrowLeft, BookOpen } from 'lucide-react';
+import { MessageCircle, X, BookOpen } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import ScriptureSelector from './ScriptureSelector';
+import ToneSetter from './ToneSetter';
 import Button from './Button';
+import { supabase } from '@/integrations/supabase/client';
+import MoodVisualizer from './MoodVisualizer';
 
 type Message = {
   id: string;
@@ -27,43 +29,51 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId }: ChatCon
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedScripture, setSelectedScripture] = useState('all');
+  const [moodHistory, setMoodHistory] = useState<{ timestamp: Date; emotion: string }[]>([]);
+  const [userTone, setUserTone] = useState<'mature' | 'neutral' | 'genz'>('neutral');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Simulated AI response function
+  const saveEmotionalJourney = async (content: string, emotion: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      await supabase.from('emotional_journey').insert({
+        user_id: user.id,
+        emotion,
+        message: content
+      });
+    } catch (error) {
+      console.error('Error saving emotional journey:', error);
+    }
+  };
+
   const simulateAIResponse = (userMessage: string) => {
     setIsLoading(true);
     
-    // This is just a simulation. In a real app, you'd call your backend API
     setTimeout(() => {
-      // Generate a contextual AI response based on user input
-      let aiResponse: string;
-      let scriptureRef = undefined;
-
-      if (userMessage.toLowerCase().includes('anxiety') || userMessage.toLowerCase().includes('worried')) {
-        aiResponse = 'When faced with anxiety, the Bhagavad Gita teaches us to focus on our duty without attachment to outcomes. Through steady practice of mindfulness and devotion, we can find peace amidst life\'s storms.';
-        scriptureRef = {
-          text: "For him who has conquered the mind, the mind is the best of friends; but for one who has failed to do so, his very mind will be the greatest enemy.",
-          source: "Bhagavad Gita, Chapter 6, Verse 6"
-        };
-      } else if (userMessage.toLowerCase().includes('purpose') || userMessage.toLowerCase().includes('meaning')) {
-        aiResponse = 'Finding your purpose involves aligning your natural abilities (dharma) with service to others. The Upanishads teach that self-realization comes through understanding your unique role in the cosmic order.';
-        scriptureRef = {
-          text: "You are what your deep, driving desire is. As your desire is, so is your will. As your will is, so is your deed. As your deed is, so is your destiny.",
-          source: "Brihadaranyaka Upanishad, 4.4.5"
-        };
-      } else {
-        aiResponse = 'The ancient wisdom from our scriptures reminds us that peace comes from within. Through meditation, selfless action, and devotion, we connect with the divine consciousness that permeates all existence.';
-      }
+      const mockResponse = {
+        shloka: "कार्पण्यदोषोपहतस्वभावः\nपृच्छामि त्वां धर्मसम्मूढचेताः",
+        meaning: "My heart is overpowered by the taint of pity; my mind is confused as to duty.",
+        shloka_summary: "This shloka speaks to the confusion and seeking of guidance.",
+        response: "Hey there, seeker! 🙏 The Gita teaches us that the path to dharma starts with seeking clarity.",
+        reflection: "What specific aspect is troubling you the most? 🤔",
+        emotion: userMessage.toLowerCase().includes('anxiety') ? 'anxious' : 'calm'
+      };
 
       const newMessage: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: aiResponse,
+        content: mockResponse.response,
         timestamp: new Date(),
-        scriptureReference: scriptureRef
+        scriptureReference: {
+          text: mockResponse.shloka,
+          source: mockResponse.meaning
+        }
       };
       
       setMessages(prev => [...prev, newMessage]);
+      saveEmotionalJourney(userMessage, mockResponse.emotion);
       setIsLoading(false);
     }, 1500);
   };
@@ -76,6 +86,11 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId }: ChatCon
       timestamp: new Date(),
     };
     
+    const messageWithTone = {
+      query: content,
+      user_type: userTone
+    };
+    
     setMessages(prev => [...prev, newMessage]);
     simulateAIResponse(content);
   };
@@ -85,7 +100,6 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId }: ChatCon
     // In a real app, you might update the AI context based on the selected scripture
   };
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -112,10 +126,17 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId }: ChatCon
           </h2>
         </div>
 
-        <ScriptureSelector onSelect={handleScriptureSelect} selected={selectedScripture} />
+        <div className="flex items-center space-x-4">
+          <ToneSetter currentTone={userTone} onToneChange={setUserTone} />
+          <ScriptureSelector onSelect={handleScriptureSelect} selected={selectedScripture} />
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {moodHistory.length > 0 && (
+          <MoodVisualizer moodHistory={moodHistory} />
+        )}
+        
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center">
             <div className="h-20 w-20 text-divine-500/50 dark:text-divine-400/50 mb-4">

@@ -1,13 +1,28 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import Logo from './Logo';
 import Button from './Button';
+import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
 
 const NavBar = () => {
+  const [user, setUser] = useState<User | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -38,9 +53,15 @@ const NavBar = () => {
           </div>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
-            <Link to="/chat">
-              <Button variant="divine">Start Conversation</Button>
-            </Link>
+            {user ? (
+              <Link to="/profile">
+                <Button variant="divine">Profile</Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button variant="divine">Sign In</Button>
+              </Link>
+            )}
           </div>
         </div>
 

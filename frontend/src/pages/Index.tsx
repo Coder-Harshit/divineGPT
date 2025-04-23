@@ -50,10 +50,10 @@ const Index = () => {
               className="mt-16 glass-card p-5 sm:p-8 rounded-2xl border border-divine-100 dark:border-divine-800 divine-glow"
             >
               <div className="relative">
-                <div className="absolute -top-1 right-1/2 transform translate-x-1/2 -translate-y-12 bg-divine-600 dark:bg-divine-500 text-white p-3 rounded-full">
+                <div className="absolute -top-2 right-1/2 transform translate-x-1/2 -translate-y-12 bg-divine-600 dark:bg-divine-500 text-white p-3 rounded-full">
                   <Quote className="h-6 w-6" />
                 </div>
-                <p className="font-sanskrit text-lg md:text-xl mt-8 italic">
+                <p className="font-sanskrit text-lg md:text-xl mt-12 italic">
                   "For him who has conquered the mind, the mind is the best of friends;
                   but for one who has failed to do so, his very mind will be the greatest enemy."
                 </p>
@@ -82,7 +82,7 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20"
+              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800"
             >
               <div className="h-12 w-12 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center mb-5">
                 <MessageCircle className="h-6 w-6 text-divine-600 dark:text-divine-400" />
@@ -98,7 +98,7 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20"
+              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800"
             >
               <div className="h-12 w-12 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center mb-5">
                 <BookOpen className="h-6 w-6 text-divine-600 dark:text-divine-400" />
@@ -114,7 +114,7 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800 transition-all duration-300 hover:shadown-lg hover:border-divine-300 dark:hover:border-divine-500 dark:hover:bg-divine-900/20"
+              className="glass-card p-6 rounded-xl border border-divine-100 dark:border-divine-800"
             >
               <div className="h-12 w-12 rounded-full bg-divine-100 dark:bg-divine-900 flex items-center justify-center mb-5">
                 <Heart className="h-6 w-6 text-divine-600 dark:text-divine-400" />
