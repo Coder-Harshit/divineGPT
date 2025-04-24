@@ -20,12 +20,12 @@ logger = get_logger("RAG Service")
 
 
 
-# Define a fallback response
-FALLBACK_RESPONSE = {
-    "shloka": "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
-    "meaning": "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. Never consider yourself to be the cause of the results, and never be attached to not doing your duty.",
-    "response": "My dear friend, I sense your question is important, but there seems to be a temporary challenge in how I'm processing it. Just as the Gita teaches us about perseverance through obstacles, I encourage you to try asking again. Sometimes the divine timing requires patience. The wisdom you seek is worth the effort. I'm here ready to guide you when you're ready to rephrase your question."
-}
+# # Define a fallback response
+# FALLBACK_RESPONSE = {
+#     "shloka": "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+#     "meaning": "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. Never consider yourself to be the cause of the results, and never be attached to not doing your duty.",
+#     "response": "My dear friend, I sense your question is important, but there seems to be a temporary challenge in how I'm processing it. Just as the Gita teaches us about perseverance through obstacles, I encourage you to try asking again. Sometimes the divine timing requires patience. The wisdom you seek is worth the effort. I'm here ready to guide you when you're ready to rephrase your question."
+# }
 
 print(f"[DEBUG] QDRANT_URL: {QDRANT_URL}")
 print(f"[DEBUG] QDRANT_API_KEY: {QDRANT_API_KEY[:5]}****")
@@ -41,45 +41,45 @@ except Exception as e:
 
 # --- API Endpoints ---
 
-def parse_llm_response(llm_output_str: str) -> dict:
-    """Safely parses JSON from LLM output with fallback strategies."""
-    if not llm_output_str or llm_output_str.startswith("Error"):
-        logger.warning("LLM returned an error or empty string.")
-        return FALLBACK_RESPONSE
+# def parse_llm_response(llm_output_str: str) -> dict:
+#     """Safely parses JSON from LLM output with fallback strategies."""
+#     if not llm_output_str or llm_output_str.startswith("Error"):
+#         logger.warning("LLM returned an error or empty string.")
+#         return FALLBACK_RESPONSE
 
-    # Step 1: Try to extract JSON block from markdown formatting or curly braces
-    match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", llm_output_str, re.DOTALL)
-    if match:
-        llm_output_str = match.group(1)
-    else:
-        start = llm_output_str.find('{')
-        end = llm_output_str.rfind('}')
-        if start != -1 and end != -1 and start < end:
-            llm_output_str = llm_output_str[start:end+1]
+#     # Step 1: Try to extract JSON block from markdown formatting or curly braces
+#     match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", llm_output_str, re.DOTALL)
+#     if match:
+#         llm_output_str = match.group(1)
+#     else:
+#         start = llm_output_str.find('{')
+#         end = llm_output_str.rfind('}')
+#         if start != -1 and end != -1 and start < end:
+#             llm_output_str = llm_output_str[start:end+1]
 
-    cleaned_str = llm_output_str.replace('\n', ' ').replace('\r', '').strip()
+#     cleaned_str = llm_output_str.replace('\n', ' ').replace('\r', '').strip()
 
-    # Step 2: Try standard JSON parsing
-    try:
-        parsed = json.loads(cleaned_str)
-        if _valid_json(parsed):
-            return parsed
-    except Exception as e:
-        logger.warning(f"json.loads failed: {e}")
+#     # Step 2: Try standard JSON parsing
+#     try:
+#         parsed = json.loads(cleaned_str)
+#         if _valid_json(parsed):
+#             return parsed
+#     except Exception as e:
+#         logger.warning(f"json.loads failed: {e}")
 
-    # Step 3: Try demjson3 which is more tolerant
-    try:
-        parsed = demjson3.decode(cleaned_str)
-        if _valid_json(parsed):
-            return parsed
-    except Exception as e:
-        logger.error(f"demjson3 failed: {e}")
-        logger.debug(f"Failed string: {llm_output_str[:500]}")
+#     # Step 3: Try demjson3 which is more tolerant
+#     try:
+#         parsed = demjson3.decode(cleaned_str)
+#         if _valid_json(parsed):
+#             return parsed
+#     except Exception as e:
+#         logger.error(f"demjson3 failed: {e}")
+#         logger.debug(f"Failed string: {llm_output_str[:500]}")
 
-    return FALLBACK_RESPONSE
+#     return FALLBACK_RESPONSE
 
-def _valid_json(data: dict) -> bool:
-    return all(key in data for key in ["shloka", "meaning", "shloka_summary", "response", "reflection", "emotion"])
+# def _valid_json(data: dict) -> bool:
+#     return all(key in data for key in ["shloka", "meaning", "shloka_summary", "response", "reflection", "emotion"])
 
 
 @app.post("/ask", response_model=RAGServiceResponse)
@@ -111,22 +111,30 @@ async def ask_question(user_query: RAGServiceQuery):
     context_string = "\n\n---\n\n".join([format_shloka_for_context(p) for p in retrieved_payloads])
     final_prompt = build_prompt(context=context_string, user_query=user_query.query, user_type=user_query.user_type)
 
-    response = requests.post(
-        f"{LLM_SERVICE_URL}/generate",
-        json={"prompt": final_prompt},
-        timeout=180,
-    ).json()
+    # response = requests.post(
+    #     f"{LLM_SERVICE_URL}/generate",
+    #     json={"prompt": final_prompt},
+    #     timeout=180,
+    # ).json()
 
 
-    llm_response = response.get("response", "Error: LLM service returned no response")
-    response = parse_llm_response(llm_response)
-    llm_response=response.get("response", llm_response)
+    # llm_response = response.get("response", "Error: LLM service returned no response")
+    # response = parse_llm_response(llm_response)
+    # llm_response=response.get("response", llm_response)
+
+    # return RAGServiceResponse(
+    #     user_query=user_query.query,
+    #     retrieved_shlokas=retrieved_payloads,
+    #     llm_response=LLMStructuredResponse(**response),
+    # )
 
     return RAGServiceResponse(
         user_query=user_query.query,
         retrieved_shlokas=retrieved_payloads,
-        llm_response=LLMStructuredResponse(**response),
+        context=context_string,
+        prompt=final_prompt
     )
+
 
 @app.get("/")
 async def read_root():
@@ -142,3 +150,6 @@ async def get_status():
         "retriever_status": retriever_status
         }
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}

@@ -85,7 +85,7 @@ class MicroserviceApi {
           shloka: "कार्पण्यदोषोपहतस्वभावः\nपृच्छामि त्वां धर्मसम्मूढचेताः",
           meaning: "My heart is overpowered by the taint of pity; my mind is confused as to duty.",
           shloka_summary: "This shloka speaks to the confusion and seeking of guidance.",
-          response: "Our microservices are currently in meditation. Please try again soon.",
+          response: "Our services are currently in meditation. Please try again soon.",
           reflection: "How can I assist you in another way?",
           emotion: "calm"
         }

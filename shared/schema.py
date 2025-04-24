@@ -1,6 +1,15 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
+class T2SRequest(BaseModel):
+    text: str
+    lang: str = Field('en', description="Language code (e.g., en, hi)")
+
+class AudioResponse(BaseModel):
+    audio_url: str
+    content_type: str = Field('audio/mpeg', description="Content type of the audio file")
+
+
 class RetrievedShloka(BaseModel):
     id: str
     chapter: int
@@ -30,13 +39,25 @@ class LLMStructuredResponse(BaseModel):
     reflection: str = Field(..., description="Follow-up thought or action step for the user")
     emotion: str = Field(..., description="Emotion inferred from the user's message (e.g., confused, hopeful)")
 
+# class RAGServiceResponse(BaseModel):
+#     user_query: str
+#     retrieved_shlokas: List[RetrievedShloka]
+#     llm_response: LLMStructuredResponse
+
 class RAGServiceResponse(BaseModel):
     user_query: str
     retrieved_shlokas: List[RetrievedShloka]
-    llm_response: LLMStructuredResponse
+    # llm_response: LLMStructuredResponse
+    context: str
+    prompt: str
 
 class ServiceStatus(BaseModel):
     service: str
     port: Optional[int] = None
     status: str
     details: Optional[str] = None
+
+class GatewayResposne(BaseModel):
+    user_query: str
+    retrieved_shlokas: List[RetrievedShloka]
+    llm_response: LLMStructuredResponse

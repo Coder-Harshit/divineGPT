@@ -42,3 +42,8 @@ async def get_status():
         "port": T2S_SERVICE_PORT,
         "status": "running",
     }
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}

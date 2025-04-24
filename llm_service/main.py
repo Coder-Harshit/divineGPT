@@ -24,3 +24,7 @@ def get_status():
         "port": LLM_SERVICE_PORT,
         "status": "running"
     }
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
