@@ -24,9 +24,29 @@ export const mapConversation = (row: ConversationRow): Conversation => ({
   messages: row.messages.map(jsonToMessage)
 });
 
-// Fetch a specific conversation by ID
-export const fetchConversation = async (id: string): Promise<Conversation | null> => {
+export const fetchAllConversations = async (): Promise<Conversation[]> => {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('timestamp', { ascending: false });
+
+    if (error) throw error;
+    return (data as ConversationRow[]).map(mapConversation);
+  } catch (error) {
+    console.error('Error fetching conversations:', error);
+    return [];
+  }
+};
+
+// Fetch a specific conversation by ID
+export const fetchConversation = async (id?: string): Promise<Conversation | null> => {
+  try {
+    if (!id) return null;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
 
@@ -38,7 +58,6 @@ export const fetchConversation = async (id: string): Promise<Conversation | null
       .single();
 
     if (error) throw error;
-    
     return data ? mapConversation(data as ConversationRow) : null;
   } catch (error) {
     console.error('Error fetching conversation:', error);
@@ -46,9 +65,70 @@ export const fetchConversation = async (id: string): Promise<Conversation | null
   }
 };
 
+// Delete a conversation by ID
+export const deleteConversation = async (id: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('conversations')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting conversation:', error);
+    return false;
+  }
+};
+
+// Delete all conversations
+export const deleteAllConversations = async (): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const { error } = await supabase
+      .from('conversations')
+      .delete()
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting all conversations:', error);
+    return false;
+  }
+};
+
+
+// // Fetch a specific conversation by ID
+// export const fetchConversation = async (id: string): Promise<Conversation | ConversationRow[] | null> => {
+//   try {
+//     const { data: { user } } = await supabase.auth.getUser();
+//     if (!user) return null;
+
+//     if (id) {
+
+//       const { data, error } = await supabase
+//         .from('conversations')
+//         .select('*')
+//         .eq('id', id)
+//         .eq('user_id', user.id)
+//         .single();
+
+//       if (error) throw error;
+
+//       return data ? mapConversation(data as ConversationRow) : null;
+//     }
+//   } catch (error) {
+//     console.error('Error fetching conversation:', error);
+//     return null;
+//   }
+// };
+
 // Save a new conversation
 export const saveConversation = async (
-  title: string, 
+  title: string,
   messages: Message[]
 ): Promise<string | null> => {
   try {
@@ -56,10 +136,10 @@ export const saveConversation = async (
     if (!user) return null;
 
     const preview = messages[0]?.content?.substring(0, 100) || 'New conversation';
-    
+
     // Convert Message[] to MessageJson[] for storage
     const jsonMessages = messages.map(messageToJson);
-    
+
     const { data, error } = await supabase
       .from('conversations')
       .insert({
@@ -72,7 +152,7 @@ export const saveConversation = async (
       .single();
 
     if (error) throw error;
-    return data?.id || null;
+    return data.id;
   } catch (error) {
     console.error('Error saving conversation:', error);
     toast({
@@ -86,13 +166,13 @@ export const saveConversation = async (
 
 // Update an existing conversation
 export const updateConversation = async (
-  id: string, 
+  id: string,
   messages: Message[]
 ): Promise<boolean> => {
   try {
     // Convert Message[] to MessageJson[] for storage
     const jsonMessages = messages.map(messageToJson);
-    
+
     const { error } = await supabase
       .from('conversations')
       .update({ messages: jsonMessages })
@@ -113,7 +193,7 @@ export const updateConversation = async (
 
 // Save user's emotional journey
 export const saveEmotionalJourney = async (
-  content: string, 
+  content: string,
   emotion: string
 ): Promise<boolean> => {
   try {
@@ -125,7 +205,7 @@ export const saveEmotionalJourney = async (
       emotion,
       message: content
     });
-    
+
     return true;
   } catch (error) {
     console.error('Error saving emotional journey:', error);

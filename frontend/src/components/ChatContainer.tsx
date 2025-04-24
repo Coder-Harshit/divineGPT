@@ -15,9 +15,10 @@ interface ChatContainerProps {
   onToggleHistory: () => void;
   showHistory: boolean;
   conversationId?: string;
+  onConversationCreated?: (id: string) => void;
 }
 
-const ChatContainer = ({ onToggleHistory, showHistory, conversationId }: ChatContainerProps) => {
+const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConversationCreated }: ChatContainerProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedScripture, setSelectedScripture] = useState('all');
   const [moodHistory, setMoodHistory] = useState<{ timestamp: Date; emotion: string }[]>([]);
@@ -28,6 +29,8 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId }: ChatCon
   useEffect(() => {
     if (conversationId) {
       loadConversation(conversationId);
+    } else{
+      setMessages([]);
     }
   }, [conversationId]);
 
@@ -48,28 +51,42 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId }: ChatCon
       },
       // Handle assistant response
       async (responseMessage, emotion) => {
-        setMessages(prev => [...prev, responseMessage]);
+        setMessages(prev => {
+          const updatedMessages = [...prev, responseMessage];
         
         // Track emotional journey
-        await saveEmotionalJourney(content, emotion);
-        
-        // Update or create conversation
-        const updatedMessages = [...messages, responseMessage];
+        // await saveEmotionalJourney(content, emotion);
+        saveEmotionalJourney(content, emotion);
         
         if (conversationId) {
           // Update existing conversation
-          await updateConversation(conversationId, updatedMessages);
+          // await updateConversation(conversationId, updatedMessages);
+          updateConversation(conversationId, updatedMessages);
         } else {
           // Create new conversation
           const title = content.length > 30 ? 
             content.substring(0, 30) + '...' : 
             content;
-          
-          await saveConversation(title, updatedMessages);
-        }
+            saveConversation(title, updatedMessages).then(newConversationId => {
+              if (newConversationId && onConversationCreated) {
+                onConversationCreated(newConversationId);
+              }
+            });
+          }
+  
+          return updatedMessages;
+        });
       }
     );
-  };
+  };          
+  //         const newConversationId = await saveConversation(title, updatedMessages);
+  //         if (newConversationId && onConversationCreated){
+  //           onConversationCreated(newConversationId);
+  //         }
+  //       }
+  //     }
+  //   );
+  // };
 
   const handleScriptureSelect = (scripture: string) => {
     setSelectedScripture(scripture);

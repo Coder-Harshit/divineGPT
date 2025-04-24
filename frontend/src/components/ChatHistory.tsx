@@ -13,16 +13,25 @@ interface ChatHistoryProps {
   onDelete: (id: string) => void;
   active: string | null;
   onNewChat?: () => void;
+  isLoading?: boolean;
 }
 
-const ChatHistory = ({ conversations: propConversations, onSelect, onDelete, active, onNewChat }: ChatHistoryProps) => {
+// const ChatHistory = ({ conversations: propConversations, onSelect, onDelete, active, onNewChat }: ChatHistoryProps) => {
+const ChatHistory = ({
+  conversations,
+  onSelect,
+  onDelete,
+  active,
+  onNewChat,
+  isLoading = false
+}: ChatHistoryProps) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [conversations, setConversations] = useState<Conversation[]>(propConversations);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [conversations, setConversations] = useState<Conversation[]>(propConversations);
+  // const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setConversations(propConversations);
-  }, [propConversations]);
+  // useEffect(() => {
+  //   setConversations(propConversations);
+  // }, [propConversations]);
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -31,15 +40,19 @@ const ChatHistory = ({ conversations: propConversations, onSelect, onDelete, act
         .from('conversations')
         .delete()
         .eq('id', id);
-
-      if (error) throw error;
+        if (error) throw error;
+      // const { error } = await supabase
+      //   .from('conversations')
+      //   .delete()
+      //   .eq('id', id);
+      // if (error) throw error;
 
       onDelete(id);
-      setConversations(conversations.filter(conv => conv.id !== id));
-      toast({
-        title: "Success",
-        description: "Conversation deleted",
-      });
+      // setConversations(conversations.filter(conv => conv.id !== id));
+      // toast({
+      //   title: "Success",
+      //   description: "Conversation deleted",
+      // });
     } catch (error) {
       console.error('Error deleting conversation:', error);
       toast({
@@ -63,7 +76,7 @@ const ChatHistory = ({ conversations: propConversations, onSelect, onDelete, act
           <Plus className="h-4 w-4" /> New
         </Button>
       </div>
-      
+
       {isLoading ? (
         <div className="flex justify-center py-8">
           <div className="flex space-x-2">
@@ -89,18 +102,17 @@ const ChatHistory = ({ conversations: propConversations, onSelect, onDelete, act
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className={`glass-card p-3 rounded-lg cursor-pointer transition-all hover:shadow-md border ${
-                active === conversation.id 
-                  ? 'border-divine-300 dark:border-divine-700 bg-divine-50/10 dark:bg-divine-900/10' 
-                  : 'border-transparent'
-              }`}
+              className={`glass-card p-3 rounded-lg cursor-pointer transition-all hover:shadow-md border ${active === conversation.id
+                ? 'border-divine-300 dark:border-divine-700 bg-divine-50/10 dark:bg-divine-900/10'
+                : 'border-transparent'
+                }`}
               onClick={() => onSelect(conversation.id)}
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-medium truncate">{conversation.title}</h3>
+                  <h3 className="text-sm font-medium truncate">{conversation.title || 'Untitled'}</h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {conversation.timestamp.toLocaleDateString()}
+                    {conversation.timestamp ? conversation.timestamp.toLocaleDateString() : ''}
                   </p>
                 </div>
                 <Button
@@ -113,15 +125,14 @@ const ChatHistory = ({ conversations: propConversations, onSelect, onDelete, act
                   <span className="sr-only">Delete</span>
                 </Button>
               </div>
-              
+
               <div
-                className={`mt-2 text-xs text-muted-foreground line-clamp-2 ${
-                  expandedId === conversation.id ? 'line-clamp-none' : ''
-                }`}
+                className={`mt-2 text-xs text-muted-foreground line-clamp-2 ${expandedId === conversation.id ? 'line-clamp-none' : ''
+                  }`}
               >
-                {conversation.preview}
+                {conversation.preview || ''}
               </div>
-              
+
               <button
                 className="mt-1 text-xs text-divine-600 hover:text-divine-700 dark:text-divine-400 dark:hover:text-divine-300 focus:outline-none"
                 onClick={(e) => {
