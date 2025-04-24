@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          id: string
+          messages: Json
+          preview: string | null
+          timestamp: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          messages?: Json
+          preview?: string | null
+          timestamp?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          messages?: Json
+          preview?: string | null
+          timestamp?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       emotional_journey: {
         Row: {
           emotion: string

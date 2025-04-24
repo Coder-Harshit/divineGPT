@@ -1,34 +1,78 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Trash2, MessageSquare } from 'lucide-react';
+import { Trash2, MessageSquare, Plus } from 'lucide-react';
 import Button from './Button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+import { Conversation, ConversationRow } from '@/types/chat';
+import { mapConversation } from '@/services/chatService';
 
 interface ChatHistoryProps {
-  conversations: {
-    id: string;
-    title: string;
-    timestamp: Date;
-    preview: string;
-  }[];
+  conversations: Conversation[];
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
   active: string | null;
+  onNewChat?: () => void;
 }
 
-const ChatHistory = ({ conversations, onSelect, onDelete, active }: ChatHistoryProps) => {
+const ChatHistory = ({ conversations: propConversations, onSelect, onDelete, active, onNewChat }: ChatHistoryProps) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>(propConversations);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleDelete = (e: React.MouseEvent, id: string) => {
+  useEffect(() => {
+    setConversations(propConversations);
+  }, [propConversations]);
+
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    onDelete(id);
+    try {
+      const { error } = await supabase
+        .from('conversations')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      onDelete(id);
+      setConversations(conversations.filter(conv => conv.id !== id));
+      toast({
+        title: "Success",
+        description: "Conversation deleted",
+      });
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete conversation",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
     <div className="space-y-3">
-      <h2 className="font-sanskrit text-lg font-medium mb-4">Recent Conversations</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-sanskrit text-lg font-medium">Recent Conversations</h2>
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-1"
+          onClick={() => onNewChat?.()}
+        >
+          <Plus className="h-4 w-4" /> New
+        </Button>
+      </div>
       
-      {conversations.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="flex space-x-2">
+            <div className="h-2 w-2 rounded-full bg-divine-500 animate-pulse"></div>
+            <div className="h-2 w-2 rounded-full bg-divine-500 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+            <div className="h-2 w-2 rounded-full bg-divine-500 animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+          </div>
+        </div>
+      ) : conversations.length === 0 ? (
         <div className="text-center py-8">
           <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
           <p className="mt-3 text-muted-foreground">No conversations yet</p>

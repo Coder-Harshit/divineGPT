@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import AudioController from './AudioController';
 
 type MessageRole = 'user' | 'assistant';
 
@@ -67,6 +68,13 @@ const ChatMessage = ({ role, content, timestamp, scriptureReference }: ChatMessa
             }`}
           >
             <div className="text-sm md:text-base whitespace-pre-wrap">{content}</div>
+            
+            {/* Audio controls for assistant messages */}
+            {!isUser && (
+              <div className="mt-2">
+                <AudioController text={content} />
+              </div>
+            )}
             
             {scriptureReference && (
               <motion.div 
