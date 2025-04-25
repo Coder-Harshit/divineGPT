@@ -22,6 +22,17 @@ services:
         value: "8000"
 
   - type: web
+    name: divinegpt-gateway_service
+    env: docker
+    repo: https://github.com/Coder-Harshit/divinegpt
+    dockerfilePath: gateway_service/Dockerfile
+    buildCommand: docker built -t divinegpt-gateway_service .
+    plan: free
+    envVars:
+      - key: GATEWAY_SERVICE_PORT
+        value: "8002"
+
+  - type: web
     name: divinegpt-t2s_service
     env: docker
     repo: https://github.com/Coder-Harshit/divinegpt
