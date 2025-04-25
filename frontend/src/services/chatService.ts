@@ -68,6 +68,9 @@ export const fetchConversation = async (id?: string): Promise<Conversation | nul
 // Delete a conversation by ID
 export const deleteConversation = async (id: string): Promise<boolean> => {
   try {
+    // First delete associated emotional journey entries
+    await deleteEmotionalJourneyForConversation(id);
+
     const { error } = await supabase
       .from('conversations')
       .delete()
@@ -194,7 +197,8 @@ export const updateConversation = async (
 // Save user's emotional journey
 export const saveEmotionalJourney = async (
   content: string,
-  emotion: string
+  emotion: string,
+  conversationId?: string
 ): Promise<boolean> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -203,12 +207,48 @@ export const saveEmotionalJourney = async (
     await supabase.from('emotional_journey').insert({
       user_id: user.id,
       emotion,
-      message: content
+      message: content,
+      conversation_id: conversationId
     });
 
     return true;
   } catch (error) {
     console.error('Error saving emotional journey:', error);
+    return false;
+  }
+};
+
+// // Delete emotional journey entries for a conversation
+// export const deleteEmotionalJourneyForConversation = async (
+//   conversationId: string
+// ): Promise<boolean> => {
+//   try {
+//     const { error } = await supabase
+//       .from('emotional_journey')
+//       .delete()
+//       .eq('conversation_id', conversationId);
+
+//     if (error) throw error;
+//     return true;
+//   } catch (error) {
+//     console.error('Error deleting emotional journey entries:', error);
+//     return false;
+//   }
+// };
+
+export const deleteEmotionalJourneyForConversation = async (
+  conversationId: string
+): Promise<boolean> => {
+  try {
+    // Use type assertion to break deep inference
+    const query = supabase.from('emotional_journey').delete() as any;
+    console.log(query);
+    const { error } = await query.eq('conversation_id', conversationId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting emotional journey entries:', error);
     return false;
   }
 };

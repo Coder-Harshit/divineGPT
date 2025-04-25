@@ -56,7 +56,7 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConvers
         
         // Track emotional journey
         // await saveEmotionalJourney(content, emotion);
-        saveEmotionalJourney(content, emotion);
+        saveEmotionalJourney(content, emotion, conversationId);
         
         if (conversationId) {
           // Update existing conversation
