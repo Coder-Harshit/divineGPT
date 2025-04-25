@@ -36,11 +36,16 @@ const ChatHistory = ({
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     try {
+      const qry = supabase.from('emotional_journey')
+        .delete() as any;
+      const { err } = await qry.eq('conversation_id', id);
+      if (err) throw err;
+
       const { error } = await supabase
         .from('conversations')
         .delete()
         .eq('id', id);
-        if (error) throw error;
+      if (error) throw error;
       // const { error } = await supabase
       //   .from('conversations')
       //   .delete()
