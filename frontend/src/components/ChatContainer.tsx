@@ -54,22 +54,28 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConvers
         setMessages(prev => {
           const updatedMessages = [...prev, responseMessage];
         
-        // Track emotional journey
-        // await saveEmotionalJourney(content, emotion);
-        saveEmotionalJourney(content, emotion, conversationId);
+        // // Track emotional journey
+        // // await saveEmotionalJourney(content, emotion);
+        // saveEmotionalJourney(content, emotion, conversationId);
         
         if (conversationId) {
           // Update existing conversation
           // await updateConversation(conversationId, updatedMessages);
           updateConversation(conversationId, updatedMessages);
+          // Track emotional journey
+          // await saveEmotionalJourney(content, emotion);
+          saveEmotionalJourney(content, emotion, conversationId);    
         } else {
           // Create new conversation
           const title = content.length > 30 ? 
             content.substring(0, 30) + '...' : 
             content;
             saveConversation(title, updatedMessages).then(newConversationId => {
-              if (newConversationId && onConversationCreated) {
-                onConversationCreated(newConversationId);
+              if (newConversationId) {
+                saveEmotionalJourney(content, emotion, newConversationId);
+                if (onConversationCreated){
+                  onConversationCreated(newConversationId);
+                }
               }
             });
           }
