@@ -59,12 +59,12 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConvers
         // saveEmotionalJourney(content, emotion, conversationId);
         
         if (conversationId) {
-          // Update existing conversation
-          // await updateConversation(conversationId, updatedMessages);
-          updateConversation(conversationId, updatedMessages);
           // Track emotional journey
           // await saveEmotionalJourney(content, emotion);
           saveEmotionalJourney(content, emotion, conversationId);    
+          // Update existing conversation
+          // await updateConversation(conversationId, updatedMessages);
+          updateConversation(conversationId, updatedMessages);
         } else {
           // Create new conversation
           const title = content.length > 30 ? 
@@ -72,8 +72,9 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConvers
             content;
             saveConversation(title, updatedMessages).then(newConversationId => {
               if (newConversationId) {
-                saveEmotionalJourney(content, emotion, newConversationId);
+                // saveEmotionalJourney(content, emotion, newConversationId);
                 if (onConversationCreated){
+                  saveEmotionalJourney(content, emotion, newConversationId);
                   onConversationCreated(newConversationId);
                 }
               }
