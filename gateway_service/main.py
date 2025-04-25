@@ -2,7 +2,7 @@ import json
 import random
 from fastapi import FastAPI, Request, HTTPException, Response
 from shared.config import RAG_SERVICE_URL, T2S_SERVICE_URL, LLM_SERVICE_URL, GATEWAY_SERVICE_PORT
-from shared.schema import GatewayResposne, RAGServiceQuery, RAGServiceResponse, ServiceStatus, AudioResponse, LLMServiceResponse, LLMServiceRequest, T2SRequest
+from shared.schema import GatewayResposne, RAGServiceQuery, AudioResponse, T2SRequest
 from shared.logger import get_logger
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
@@ -330,4 +330,4 @@ async def call_service(client, url, data):
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "Gateway Service", "port": GATEWAY_SERVICE_PORT}

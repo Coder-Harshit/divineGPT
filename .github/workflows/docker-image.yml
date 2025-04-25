@@ -28,6 +28,9 @@ jobs:
       - name: Test RAG Service
         run: curl --fail http://localhost:8001/status
 
+      - name: Test GATEWAY Service
+        run: curl --fail http://localhost:8002/status
+
       - name: Test T2S Service
         run: curl --fail http://localhost:8003/status
 
