@@ -38,14 +38,13 @@ const ChatHistory = ({
     try {
       const qry = supabase.from('emotional_journey')
         .delete() as any;
-      const { err } = await qry.eq('conversation_id', id);
-      if (err) throw err;
+      qry.eq('conversation_id', id);
+      // const { err } = qry.eq('conversation_id', id);
+      // if (err) throw err;
 
-      const { error } = await supabase
-        .from('conversations')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
+      const convo_del = supabase.from('conversations').delete();
+      convo_del.eq('id', id);
+      // if (error) throw error;
       // const { error } = await supabase
       //   .from('conversations')
       //   .delete()
