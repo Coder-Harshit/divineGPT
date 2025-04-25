@@ -25,6 +25,8 @@ const MicroserviceHealth = () => {
     t2s: 'checking'
   });
 
+  const [serviceDetails, setServiceDetails] = useState<any>({});
+
   // Check the health of a single service
   const checkServiceHealth = async (
     name: keyof ServiceHealthState, 
@@ -33,7 +35,7 @@ const MicroserviceHealth = () => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
-      
+      console.log(`Checking ${name} service at ${url}/health`);
       const response = await fetch(`${url}/health`, {
         method: 'GET',
         signal: controller.signal
@@ -83,11 +85,36 @@ const MicroserviceHealth = () => {
     });
   };
 
+  const fetchServiceDetails = async () => {
+    const details: any = {};
+    for (const [key, config] of Object.entries({...MICROSERVICES.DIRECT, "GATEWAY": MICROSERVICES.GATEWAY})) {
+      const serviceName = key == "GATEWAY" ? "gateway" : key.toLowerCase().replace("_service", "");
+      try {
+        const res = await fetch(`${config.BASE_URL}/health`);
+        details[serviceName] = await res.json();
+      } catch {
+        details[serviceName] = { status: "offline" };
+      }
+    }
+    // // Gateway
+    // try {
+    //   const res = await fetch(`${MICROSERVICES.GATEWAY.BASE_URL}/status`);
+    //   details.gateway = await res.json();
+    // } catch {
+    //   details.gateway = { status: "offline" };
+    // }
+    setServiceDetails(details);
+  };
+
   // Check service health on component mount
   useEffect(() => {
     checkAllServices();
+    fetchServiceDetails();
     // Periodically check health every 60 seconds
-    const interval = setInterval(checkAllServices, 60000);
+    const interval = setInterval(() => {
+      checkAllServices();
+      fetchServiceDetails();
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -118,28 +145,28 @@ const MicroserviceHealth = () => {
             <div className="space-y-2 p-1">
               <div className="text-xs font-medium">Microservice Status</div>
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-1">
-                  <span>Gateway:</span>
-                  {getStatusIcon(serviceStatus.gateway)}
-                </div>
-                <div className="flex items-center gap-1">
-                  <span>LLM:</span>
-                  {getStatusIcon(serviceStatus.llm)}
-                </div>
-                <div className="flex items-center gap-1">
-                  <span>RAG:</span>
-                  {getStatusIcon(serviceStatus.rag)}
-                </div>
-                <div className="flex items-center gap-1">
-                  <span>T2S:</span>
-                  {getStatusIcon(serviceStatus.t2s)}
-                </div>
+                {["gateway", "llm", "rag", "t2s"].map((key) => (
+                  <div key={key} className="flex flex-col gap-1">
+                    <span className="flex items-center gap-1">
+                      {key.toUpperCase()}:
+                      {getStatusIcon(serviceStatus[key as keyof ServiceHealthState])}
+                    </span>
+                    {/* <span>
+                      {serviceDetails[key]?.service || ""}
+                      {serviceDetails[key]?.port ? ` (:${serviceDetails[key].port})` : ""}
+                      {serviceDetails[key]?.status && serviceDetails[key]?.status !== "running"
+                        ? ` - ${serviceDetails[key].status}`
+                        : ""}
+                    </span> */}
+                  </div>
+                ))}
               </div>
               <button 
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   checkAllServices();
+                  fetchServiceDetails();
                 }}
                 className="text-xs text-divine-500 hover:text-divine-600 dark:text-divine-400 dark:hover:text-divine-300"
               >

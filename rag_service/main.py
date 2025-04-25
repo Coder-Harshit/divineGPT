@@ -11,6 +11,7 @@ from shared.config import RAG_SERVICE_PORT, LLM_SERVICE_URL, QDRANT_URL, QDRANT_
 from shared.logger import get_logger
 from rag_service.retriever import GitaRetriever
 from rag_service.prompt_builder import build_prompt, format_shloka_for_context
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="DivineGPT - RAG Service",
@@ -18,6 +19,15 @@ app = FastAPI(
 )
 logger = get_logger("RAG Service")
 
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # # Define a fallback response
@@ -152,4 +162,4 @@ async def get_status():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "RAG Service", "port": RAG_SERVICE_PORT}

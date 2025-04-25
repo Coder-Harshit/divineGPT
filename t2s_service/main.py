@@ -5,9 +5,21 @@ from io import BytesIO
 from fastapi.responses import StreamingResponse
 from shared.logger import get_logger
 from shared.config import T2S_SERVICE_PORT
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="DivineGPT - Text to Speech Service")
 logger = get_logger("T2S Service")
+
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 class T2SRequest(BaseModel):
     text: str = Field(..., description="Text to convert to speech (max 1000 characters)")
@@ -46,4 +58,4 @@ async def get_status():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "Text-2-Speech Service", "port": T2S_SERVICE_PORT}
