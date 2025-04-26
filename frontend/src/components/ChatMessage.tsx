@@ -48,7 +48,7 @@ const ChatMessage = ({ role, content, timestamp, scriptureReference }: ChatMessa
       animate="visible"
       variants={bubbleVariants}
       ref={messageRef}
-      className={`mb-4 max-w-[85%] ${isUser ? 'ml-auto' : 'mr-auto'}`}
+      className={`mb-4 max-w-full md:max-w-[85%] ${isUser ? 'ml-auto' : 'mr-auto'}`}
     >
       <div className={`flex items-start ${isUser ? 'justify-end' : 'justify-start'}`}>
         {!isUser && (
