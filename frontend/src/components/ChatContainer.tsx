@@ -104,7 +104,8 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConvers
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    // <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full min-h-0 overflow-hidden">
       <div className="glass-card p-3 md:p-4 flex items-center justify-between">
         <div className="flex items-center">
           <Button 
@@ -132,7 +133,7 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConvers
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center">
             <div className="h-20 w-20 text-divine-500/50 dark:text-divine-400/50 mb-4">

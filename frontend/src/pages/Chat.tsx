@@ -73,7 +73,7 @@ const ChatPage = () => {
 
   const handleNewChat = () => {
     setActiveConversation(null);
-    setConversations([]);
+    // setConversations([]);
   }
 
   const toggleHistory = () => {
@@ -84,8 +84,10 @@ const ChatPage = () => {
     <div className="min-h-screen flex flex-col">
       <NavBar />
       
-      <main className="flex-1 pt-24 pb-6 max-w-7xl mx-auto w-full px-4">
-        <div className="flex h-[calc(100vh-12rem)] rounded-xl overflow-hidden glass-card">
+      {/* <main className="flex-1 pt-24 pb-6 max-w-7xl mx-auto w-full px-4"> */}
+      <main className="flex-1 pt-24 pb-6 max-w-7xl mx-auto w-full px-4 flex flex-col">
+        {/* <div className="flex h-[calc(100vh-12rem)] rounded-xl overflow-hidden glass-card"> */}
+        <div className="flex flex-1 rounded-xl overflow-hidden glass-card min-h-0">
           {/* Sidebar - Chat History */}
           <div 
             className={`w-72 border-r border-divine-100 dark:border-divine-800 ${
@@ -103,7 +105,7 @@ const ChatPage = () => {
           </div>
           
           {/* Main Chat Area */}
-          <div className={`${showHistory ? 'hidden md:block md:flex-1' : 'flex-1'} flex flex-col`}>
+          <div className={`${showHistory ? 'hidden md:block md:flex-1' : 'flex-1'} flex flex-col min-h-0`}>
             <ChatContainer 
               onToggleHistory={toggleHistory} 
               showHistory={showHistory}
