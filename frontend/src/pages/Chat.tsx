@@ -56,6 +56,7 @@ const ChatPage = () => {
       if (activeConversation === id) {
         setActiveConversation(null);
       }
+      fetchAllConversations();
       toast({
         title: "Success",
         description: "Conversation deleted successfully.",

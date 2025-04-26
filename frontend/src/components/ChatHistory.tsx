@@ -33,17 +33,33 @@ const ChatHistory = ({
   //   setConversations(propConversations);
   // }, [propConversations]);
 
+  // const handleDelete = async (e: React.MouseEvent, id: string) => {
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     try {
-      const qry = supabase.from('emotional_journey')
-        .delete() as any;
-      qry.eq('conversation_id', id);
-      // const { err } = qry.eq('conversation_id', id);
-      // if (err) throw err;
+      // @ts-expect-error TS2589: Type instantiation is excessively deep and possibly infinite.
 
-      const convo_del = supabase.from('conversations').delete();
-      convo_del.eq('id', id);
+      // First, delete emotional_journey entries
+      const {error: ejError } = await supabase
+        .from('emotional_journey')
+        .delete()
+        .eq('conversation_id', id);
+      if (ejError) throw ejError;
+    
+      // Then, delete the conversation
+      const { error: convoError } = await supabase
+        .from('conversations')
+        .delete()
+        .eq('id', id)
+      if (convoError) throw convoError;
+
+      // const qry = supabase.from('emotional_journey')
+      //   .delete() as any;
+      // qry.eq('conversation_id', id);
+      // // const { err } = qry.eq('conversation_id', id);
+      // // if (err) throw err;
+      // const convo_del = supabase.from('conversations').delete();
+      // convo_del.eq('id', id);
       // if (error) throw error;
       // const { error } = await supabase
       //   .from('conversations')
