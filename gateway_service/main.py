@@ -136,25 +136,64 @@ async def gateway_ask(request: Request):
     # logger.info(f"Gateway returning response to client.")
     # return response_data
 
-
-@app.post("/speak", response_model=AudioResponse)
-async def gateway_speak(request: T2SRequest):
+@app.post("/speak")
+async def gateway_speak(request: Request):
     """
-    Gateway endpoint for text-to-speech conversion
+    Gateway endpoint to forward text-to-speech requests to the T2S service.
     """
-    logger.info(f"Gateway received T2S request")
-    
     try:
-        async with httpx.AsyncClient() as client:
+        body = await request.json() # Get the JSON body from the original request
+        t2s_request_data = T2SRequest(**body) # Validate against Pydantic model
+        logger.info(f"Gateway received T2S request for lang: {t2s_request_data.lang}")
+        
+        async with httpx.AsyncClient(timeout=60) as client:
             t2s_response = await client.post(
                 f"{T2S_SERVICE_URL}/speak",
-                json=request.model_dump(),
+                json=t2s_request_data.model_dump(), # Send validated data
             )
-            t2s_response.raise_for_status()
-            return t2s_response.json()
+            t2s_response.raise_for_status() # Check for HTTP errors (4xx, 5xx)
+            
+        # Return the binary audio data with proper headers
+        # Get the content type from the T2S service response
+        content_type = t2s_response.headers.get("content-type", "audio/mpeg") 
+        logger.info(f"Forwarding T2S response with content type: {content_type}")
+        
+        return Response(
+            content=t2s_response.content, # Pass the raw binary content
+            media_type=content_type
+        )
+    
     except httpx.RequestError as exc:
-        logger.error(f"T2S service connection error: {exc}")
-        raise HTTPException(status_code=503, detail="Text-to-speech service unavailable")
+        logger.error(f"Error connecting to T2S service: {exc}")
+        raise HTTPException(status_code=503, detail=f"T2S service unavailable: {str(exc)}")
+    except httpx.HTTPStatusError as exc:
+         logger.error(f"T2S service returned error {exc.response.status_code}: {exc.response.text}")
+         raise HTTPException(status_code=exc.response.status_code, detail=f"T2S service error: {exc.response.text}")
+    except Exception as e:
+        logger.error(f"Unexpected error in gateway_speak: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Gateway error: {str(e)}")
+
+
+# @app.post("/speak", response_model=AudioResponse)
+# async def gateway_speak(request: T2SRequest):
+#     """
+#     Gateway endpoint for text-to-speech conversion
+#     """
+#     logger.info(f"Gateway received T2S request")
+    
+#     try:
+#         async with httpx.AsyncClient(timeout=180) as client:
+#             t2s_response = await client.post(
+#                 f"{T2S_SERVICE_URL}/speak",
+#                 json=request.model_dump(),
+#             )
+#             t2s_response.raise_for_status()
+#             print("-1--2-1-1-2")
+#             print("-1--2-1-1-2")
+#             return t2s_response.json()
+#     except httpx.RequestError as exc:
+#         logger.error(f"T2S service connection error: {exc}")
+#         raise HTTPException(status_code=503, detail="Text-to-speech service unavailable")
 
 
 # @app.post("/speak")

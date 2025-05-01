@@ -100,7 +100,6 @@ class MicroserviceApi {
     try {
       const service = this.useGateway ? 'GATEWAY' : 'T2S_SERVICE';
       const endpoint = this.useGateway ? 'speak' : 'SPEAK';
-      
       const response = await fetch(this.getEndpoint(service, endpoint), {
         method: 'POST',
         headers: {
@@ -111,6 +110,7 @@ class MicroserviceApi {
           lang,
         }),
       });
+      console.log(response);
 
       if (!response.ok) {
         throw new Error(`Text-to-speech API call failed with status: ${response.status}`);
