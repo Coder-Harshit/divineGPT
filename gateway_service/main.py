@@ -2,7 +2,7 @@ import json
 import random
 from fastapi import FastAPI, Request, HTTPException, Response
 from shared.config import RAG_SERVICE_URL, T2S_SERVICE_URL, LLM_SERVICE_URL, GATEWAY_SERVICE_PORT
-from shared.schema import GatewayResposne, RAGServiceQuery, AudioResponse, T2SRequest
+from shared.schema import AskRequest, GatewayResposne, RAGServiceQuery, AudioResponse, T2SRequest
 from shared.logger import get_logger
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,105 +33,117 @@ FALLBACK_RESPONSE = {
     "response": "My dear friend, I sense your question is important, but there seems to be a temporary challenge in how I'm processing it. Just as the Gita teaches us about perseverance through obstacles, I encourage you to try asking again. Sometimes the divine timing requires patience. The wisdom you seek is worth the effort. I'm here ready to guide you when you're ready to rephrase your question."
 }
 
-def parse_llm_response(llm_output_str: str) -> dict:
-    """Safely parses JSON from LLM output with fallback strategies."""
-    if not llm_output_str or llm_output_str.startswith("Error"):
-        logger.warning("LLM returned an error or empty string.")
-        return FALLBACK_RESPONSE
+# def parse_llm_response(llm_output_str: str) -> dict:
+#     """Safely parses JSON from LLM output with fallback strategies."""
+#     if not llm_output_str or llm_output_str.startswith("Error"):
+#         logger.warning("LLM returned an error or empty string.")
+#         return FALLBACK_RESPONSE
 
-    # Step 1: Try to extract JSON block from markdown formatting or curly braces
-    match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", llm_output_str, re.DOTALL)
-    if match:
-        llm_output_str = match.group(1)
-    else:
-        start = llm_output_str.find('{')
-        end = llm_output_str.rfind('}')
-        if start != -1 and end != -1 and start < end:
-            llm_output_str = llm_output_str[start:end+1]
+#     # Step 1: Try to extract JSON block from markdown formatting or curly braces
+#     match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", llm_output_str, re.DOTALL)
+#     if match:
+#         llm_output_str = match.group(1)
+#     else:
+#         start = llm_output_str.find('{')
+#         end = llm_output_str.rfind('}')
+#         if start != -1 and end != -1 and start < end:
+#             llm_output_str = llm_output_str[start:end+1]
 
-    cleaned_str = llm_output_str.replace('\n', ' ').replace('\r', '').strip()
+#     cleaned_str = llm_output_str.replace('\n', ' ').replace('\r', '').strip()
 
-    # Step 2: Try standard JSON parsing
-    try:
-        parsed = json.loads(cleaned_str)
-        if _valid_json(parsed):
-            return parsed
-    except Exception as e:
-        logger.warning(f"json.loads failed: {e}")
+#     # Step 2: Try standard JSON parsing
+#     try:
+#         parsed = json.loads(cleaned_str)
+#         if _valid_json(parsed):
+#             return parsed
+#     except Exception as e:
+#         logger.warning(f"json.loads failed: {e}")
 
-    # Step 3: Try demjson3 which is more tolerant
-    try:
-        parsed = demjson3.decode(cleaned_str)
-        if _valid_json(parsed):
-            return parsed
-    except Exception as e:
-        logger.error(f"demjson3 failed: {e}")
-        logger.debug(f"Failed string: {llm_output_str[:500]}")
+#     # Step 3: Try demjson3 which is more tolerant
+#     try:
+#         parsed = demjson3.decode(cleaned_str)
+#         if _valid_json(parsed):
+#             return parsed
+#     except Exception as e:
+#         logger.error(f"demjson3 failed: {e}")
+#         logger.debug(f"Failed string: {llm_output_str[:500]}")
 
-    return FALLBACK_RESPONSE
+#     return FALLBACK_RESPONSE
 
-def _valid_json(data: dict) -> bool:
-    return all(key in data for key in ["shloka", "meaning", "shloka_summary", "response", "reflection", "emotion"])
+# def _valid_json(data: dict) -> bool:
+#     return all(key in data for key in ["shloka", "meaning", "shloka_summary", "response", "reflection", "emotion"])
 
 
 
 @app.post("/ask", response_model=GatewayResposne)
-async def gateway_ask(request: Request):
+async def gateway_ask(request: AskRequest):
     """
     Gateway endpoint to forward requests to the RAG service.
     """
-    body = await request.json()
-    user_query = RAGServiceQuery(**body)
+    # body = await request.json()
+    # user_query = RAGServiceQuery(**body)
 
-    logger.info(f"Gateway received query: {user_query.query}")
+    logger.info(f"Gateway received query: {request.query}")
+    logger.info(f"History Length: {len(request.history or [])}")
+    logger.info(f"Prev summary: {'Yes' if request.previous_summary else 'No'}")
 
     try:
         async with httpx.AsyncClient(timeout=270) as client:
             rag_response = await client.post(
                 f"{RAG_SERVICE_URL}/ask",
-                json=user_query.model_dump(),
+                json=request.model_dump(exclude_none=True),
                 timeout=270,
             )
             rag_response.raise_for_status()
-            rag_data = rag_response.json()
-
+            response_data = rag_response.json()
+            logger.info("Received successful response from RAG service.")
+            return response_data
      
-        # Check if RAG service returned a complete response (fallback case)
-        if "llm_response" in rag_data:
-            logger.info("RAG service returned complete response (fallback case)")
-            return rag_data
+        # # Check if RAG service returned a complete response (fallback case)
+        # if "llm_response" in rag_data:
+        #     logger.info("RAG service returned complete response (fallback case)")
+        #     return rag_data
             
-        # Step 2: Forward prompt to LLM service
-        async with httpx.AsyncClient(timeout=180) as client:
-            llm_response = await client.post(
-                f"{LLM_SERVICE_URL}/generate",
-                json={"prompt": rag_data["prompt"]},
-                timeout=180,
-            )
-            llm_response.raise_for_status()
-            llm_data = llm_response.json()
+        # # Step 2: Forward prompt to LLM service
+        # async with httpx.AsyncClient(timeout=180) as client:
+        #     llm_response = await client.post(
+        #         f"{LLM_SERVICE_URL}/generate",
+        #         json={"prompt": rag_data["prompt"]},
+        #         timeout=180,
+        #     )
+        #     llm_response.raise_for_status()
+        #     llm_data = llm_response.json()
             
-        # Step 3: Parse LLM response (this was in RAG service before)
-        llm_output = llm_data.get("response", "Error: LLM service returned no response")
-        parsed_response = parse_llm_response(llm_output)  # You'll need to move this function to the gateway
+        # # Step 3: Parse LLM response (this was in RAG service before)
+        # llm_output = llm_data.get("response", "Error: LLM service returned no response")
+        # parsed_response = parse_llm_response(llm_output)  # You'll need to move this function to the gateway
         
-        # Step 4: Construct final response
-        final_response = {
-            "user_query": user_query.query,
-            "retrieved_shlokas": rag_data["retrieved_shlokas"],
-            "llm_response": parsed_response
-        }
+        # # Step 4: Construct final response
+        # final_response = {
+        #     "user_query": user_query.query,
+        #     "retrieved_shlokas": rag_data["retrieved_shlokas"],
+        #     "llm_response": parsed_response
+        # }
         
-        logger.info("Gateway returning complete response to client")
-        print(final_response)
-        return final_response
+        # logger.info("Gateway returning complete response to client")
+        # print(final_response)
+        # return final_response
                 
     except httpx.RequestError as exc:
         logger.error(f"Error connecting to RAG service: {exc}")
         raise HTTPException(status_code=503, detail="RAG service unavailable")
     except httpx.HTTPStatusError as exc:
-        logger.error(f"RAG service returned error: {exc.response.text}")
-        raise HTTPException(status_code=exc.response.status_code, detail=exc.response.text)
+         logger.error(f"RAG service returned error {exc.response.status_code}: {exc.response.text}")
+         detail = f"Meditation Realm (RAG) error: {exc.response.text}"
+         try:
+             detail = exc.response.json().get("detail", detail)
+         except:
+             pass
+         raise HTTPException(status_code=exc.response.status_code, detail=detail)
+    except Exception as e:
+        logger.error(f"Unexpected error in gateway_ask: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Gateway encountered an obstacle: {str(e)}")
+
 
     # logger.info(f"Gateway returning response to client.")
     # return response_data

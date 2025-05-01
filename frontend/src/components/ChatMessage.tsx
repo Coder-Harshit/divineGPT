@@ -13,9 +13,10 @@ interface ChatMessageProps {
     source: string;
     transliteration?: string;
   };
+  isReframing?: boolean; // Add this line
 }
 
-const ChatMessage = ({ role, content, timestamp, scriptureReference }: ChatMessageProps) => {
+const ChatMessage = ({ role, content, timestamp, scriptureReference, isReframing = false }: ChatMessageProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const messageRef = useRef<HTMLDivElement>(null);
   
@@ -60,11 +61,16 @@ const ChatMessage = ({ role, content, timestamp, scriptureReference }: ChatMessa
         )}
         
         <div className="flex flex-col">
+          {isReframing && !isUser && (
+            <div className="text-xs text-divine-500 mb-1 ml-1">
+              Reframing previous answer
+            </div>
+          )}
           <div 
             className={`px-4 py-3 rounded-2xl ${
               isUser 
                 ? 'bg-divine-600 text-white' 
-                : 'glass-card dark:glass-dark'
+                : `glass-card dark:glass-dark ${isReframing ? 'border-l-2 border-divine-500' : ''}`
             }`}
           >
             <div className="text-sm md:text-base whitespace-pre-wrap">{content}</div>

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 class T2SRequest(BaseModel):
     text: str
@@ -9,6 +9,10 @@ class AudioResponse(BaseModel):
     audio_url: str
     content_type: str = Field('audio/mpeg', description="Content type of the audio file")
 
+class MessageSchema(BaseModel):
+    """Represents a single message in the chat histroy."""
+    role: str = Field(..., description="Role of the message sender (e.g., user, assistant)")
+    content: str = Field(..., description="Content of the message")
 
 class RetrievedShloka(BaseModel):
     id: str
@@ -29,7 +33,9 @@ class LLMServiceResponse(BaseModel):
 
 class RAGServiceQuery(BaseModel):
     query: str
-    user_type: Optional[str] = Field("neutral", description="Type of user (e.g. genz, mature, neutral")
+    user_type: Optional[str] = Field("genz", description="Type of user (e.g. genz, mature, neutral")
+    history: Optional[List[MessageSchema]] = Field(None, description="Conversation history with the user")
+    previous_summary: Optional[str] = Field(None, description="Previous summary of the conversation")
 
 class LLMStructuredResponse(BaseModel):
     shloka: str = Field(..., description="Sanskrit shloka that addresses the user's concern")
@@ -38,6 +44,7 @@ class LLMStructuredResponse(BaseModel):
     response: str = Field(..., description="~200 word Krishna-style response tailored to the user's query")
     reflection: str = Field(..., description="Follow-up thought or action step for the user")
     emotion: str = Field(..., description="Emotion inferred from the user's message (e.g., confused, hopeful)")
+    new_summary: str = Field(..., description="Updated summary of the conversation after the response")
 
 # class RAGServiceResponse(BaseModel):
 #     user_query: str
@@ -47,7 +54,7 @@ class LLMStructuredResponse(BaseModel):
 class RAGServiceResponse(BaseModel):
     user_query: str
     retrieved_shlokas: List[RetrievedShloka]
-    # llm_response: LLMStructuredResponse
+    llm_response: LLMStructuredResponse
     context: str
     prompt: str
 
@@ -61,3 +68,9 @@ class GatewayResposne(BaseModel):
     user_query: str
     retrieved_shlokas: List[RetrievedShloka]
     llm_response: LLMStructuredResponse
+
+class AskRequest(BaseModel):
+    query: str
+    user_type: Optional[str] = Field("genz", description="Type of user (e.g. genz, mature, neutral")
+    history: Optional[List[MessageSchema]] = Field(None, description="Conversation history with the user")
+    previous_summary: Optional[str] = Field(None, description="Previous summary of the conversation")

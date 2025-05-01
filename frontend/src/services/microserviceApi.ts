@@ -1,9 +1,20 @@
 import { MICROSERVICES } from '@/config/microservices';
 import { toast } from '@/hooks/use-toast';
+import { Message } from '@/types/chat';
 
 // Types for microservice responses
-export type DivineResponse = {
+// Define the structure expected by the backend (matches shared/schema.py AskRequest)
+interface AskApiPayload {
+  query: string;
+  user_type: string;
+  history?: { role: string; content: string }[]; // Match MessageSchema
+  previous_summary?: string; // Add previous_summary
+}
+
+// Define the structure received from the backend (matches shared/schema.py RAGServiceResponse)
+export interface DivineResponse {
   user_query: string;
+  retrieved_shlokas: any[]; // Use specific type if available
   llm_response: {
     shloka: string;
     meaning: string;
@@ -11,14 +22,32 @@ export type DivineResponse = {
     response: string;
     reflection: string;
     emotion: string;
+    new_summary: string; // Add new_summary here
   };
-};
+  context?: string;
+  prompt?: string;
+}
 
 export type AudioResponse = {
   audio_data: string;
   format: string;
 };
 
+
+// Fallback response structure
+const FALLBACK_DIVINE_RESPONSE: DivineResponse = {
+  user_query: "", // Will be filled in
+  retrieved_shlokas: [],
+  llm_response: {
+    shloka: "कार्पण्यदोषोपहतस्वभावः\nपृच्छामि त्वां धर्मसम्मूढचेताः",
+    meaning: "My heart is overpowered by the taint of pity; my mind is confused as to duty.",
+    shloka_summary: "This shloka speaks to the confusion and seeking of guidance.",
+    response: "My apologies, friend. Our connection seems weak, like a flickering lamp in the wind. Please try asking again shortly.",
+    reflection: "Patience is a virtue we cultivate even in technical difficulties.",
+    emotion: "calm",
+    new_summary: "" // Add default empty new_summary
+  }
+};
 /**
  * API client for interacting with the microservices
  */
@@ -54,44 +83,121 @@ class MicroserviceApi {
   /**
    * Send a query to the LLM service
    */
-  async askDivineQuestion(query: string, userType: string): Promise<DivineResponse> {
+  async askDivineQuestion(
+    query: string,
+    userType: string,
+    history: Message[] = [],
+    previousSummary: string = '',
+  ): Promise<DivineResponse> {
+    const service = this.useGateway ? 'GATEWAY' : 'LLM_SERVICE';
+    const endpoint = this.useGateway ? 'ASK' : 'ASK';
+    
+    const formattedHistory = history?.map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }));
+
+    const payload: AskApiPayload = {
+      query,
+      user_type: userType,
+      history: formattedHistory,
+      previous_summary: previousSummary, // Include previousSummary in payload
+    };
+
     try {
-      const service = this.useGateway ? 'GATEWAY' : 'LLM_SERVICE';
-      const endpoint = this.useGateway ? 'ASK' : 'ASK';
-      
-      const response = await fetch(this.getEndpoint(service, endpoint), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          user_type: userType
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API call failed with status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching divine response:', error);
-      
-      // Return a fallback response if API call fails
-      return {
-        user_query: query,
-        llm_response: {
-          shloka: "कार्पण्यदोषोपहतस्वभावः\nपृच्छामि त्वां धर्मसम्मूढचेताः",
-          meaning: "My heart is overpowered by the taint of pity; my mind is confused as to duty.",
-          shloka_summary: "This shloka speaks to the confusion and seeking of guidance.",
-          response: "Our services are currently in meditation. Please try again soon.",
-          reflection: "How can I assist you in another way?",
-          emotion: "calm"
+        console.log(`Sending query to ${this.getEndpoint(service, endpoint)} with payload:`, payload);
+        const response = await fetch(this.getEndpoint(service, endpoint), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+  
+        console.log(`Received response status: ${response.status}`);
+        if (!response.ok) {
+          let errorDetail = `API call failed with status: ${response.status}`;
+          try {
+            const errorJson = await response.json();
+            errorDetail = errorJson.detail || errorDetail;
+          } catch (e) {}
+          throw new Error(errorDetail);
         }
-      };
+        const responseData: DivineResponse = await response.json();
+        console.log("Received DivineResponse:", responseData);
+  
+        // Basic validation of the received structure
+        if (!responseData?.llm_response?.new_summary === undefined) {
+            console.warn("Received response missing 'llm_response.new_summary'. Using fallback structure.");
+            // Return fallback but keep user query and potentially other parts if they exist
+            return {
+                ...FALLBACK_DIVINE_RESPONSE,
+                user_query: query,
+                llm_response: {
+                    ...(responseData?.llm_response || FALLBACK_DIVINE_RESPONSE.llm_response), // Keep existing llm_response fields if possible
+                    new_summary: previousSummary || "" // Use previous summary as fallback for new one
+                }
+            };
+        }
+  
+        return responseData;
+  
+      } catch (error: any) {
+        console.error('Error asking divine question:', error);
+        toast({
+          title: "Connection Error",
+          description: error.message || "Failed to get response from the divine realms. Please try again.",
+          variant: "destructive"
+        });
+        // Return fallback, ensuring new_summary uses previous summary
+        return {
+            ...FALLBACK_DIVINE_RESPONSE,
+            user_query: query,
+            llm_response: {
+                ...FALLBACK_DIVINE_RESPONSE.llm_response,
+                new_summary: previousSummary || "" // Use previous summary as fallback
+            }
+        };
+      }
     }
-  }
+  
+        
+      // const response = await fetch(this.getEndpoint(service, endpoint), {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     query,
+      //     user_type: userType
+      //   }),
+      // });
+
+  //     if (!response.ok) {
+  //       throw new Error(`API call failed with status: ${response.status}`);
+  //     }
+
+  //     return await response.json();
+  //   } catch (error) {
+  //     console.error('Error fetching divine response:', error);
+      
+  //     // Return a fallback response if API call fails
+  //     return {
+  //       user_query: query,
+  //       llm_response: {
+  //         shloka: "कार्पण्यदोषोपहतस्वभावः\nपृच्छामि त्वां धर्मसम्मूढचेताः",
+  //         meaning: "My heart is overpowered by the taint of pity; my mind is confused as to duty.",
+  //         shloka_summary: "This shloka speaks to the confusion and seeking of guidance.",
+  //         response: "Our services are currently in meditation. Please try again soon.",
+  //         reflection: "How can I assist you in another way?",
+  //         emotion: "calm",
+  //         new_summary: ""
+  //       },
+  //       retrieved_shlokas: [],
+  //     };
+  //   }
+  // }
 
   /**
    * Get text-to-speech audio from the T2S service

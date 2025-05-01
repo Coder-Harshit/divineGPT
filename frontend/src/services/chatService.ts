@@ -1,6 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Message, MessageJson, Conversation, ConversationRow } from '@/types/chat';
 import { toast } from '@/hooks/use-toast';
+import { PostgrestError } from '@supabase/supabase-js';
+
 
 // Helper to convert database timestamp to Date object
 const convertTimestamp = (timestamp: string): Date => new Date(timestamp);
@@ -132,7 +134,8 @@ export const deleteAllConversations = async (): Promise<boolean> => {
 // Save a new conversation
 export const saveConversation = async (
   title: string,
-  messages: Message[]
+  messages: Message[],
+  summary?: string
 ): Promise<string | null> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -149,7 +152,8 @@ export const saveConversation = async (
         user_id: user.id,
         title: title || 'New conversation',
         messages: jsonMessages,
-        preview: preview
+        preview: preview,
+        summary: summary || null
       })
       .select('id')
       .single();
@@ -170,7 +174,8 @@ export const saveConversation = async (
 // Update an existing conversation
 export const updateConversation = async (
   id: string,
-  messages: Message[]
+  messages: Message[],
+  summary?: string
 ): Promise<boolean> => {
   try {
     // Convert Message[] to MessageJson[] for storage
@@ -178,7 +183,10 @@ export const updateConversation = async (
 
     const { error } = await supabase
       .from('conversations')
-      .update({ messages: jsonMessages })
+      .update({
+        messages: jsonMessages,
+        summary: summary || null,
+      })
       .eq('id', id);
 
     if (error) throw error;

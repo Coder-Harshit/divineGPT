@@ -7,6 +7,7 @@ export type Message = {
       text: string;
       source: string;
     };
+    isReframing?: boolean; // Add this line
   };
   
   // This represents a message as stored in Supabase's JSONB column (with string timestamp)
@@ -19,6 +20,7 @@ export type Message = {
       text: string;
       source: string;
     };
+    isReframing?: boolean; // Add this line
   };
   
   export type Conversation = {
@@ -28,6 +30,7 @@ export type Message = {
     messages: Message[];
     preview?: string;
     timestamp: Date;
+    summary?: string;
   };
   
   export type ConversationRow = {
