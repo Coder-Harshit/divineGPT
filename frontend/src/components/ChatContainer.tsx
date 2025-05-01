@@ -22,7 +22,7 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConvers
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedScripture, setSelectedScripture] = useState('all');
   const [moodHistory, setMoodHistory] = useState<{ timestamp: Date; emotion: string }[]>([]);
-  const [userTone, setUserTone] = useState<'mature' | 'neutral' | 'genz'>('neutral');
+  const [userTone, setUserTone] = useState<'mature' | 'neutral' | 'genz'>('genz');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isLoading, processUserMessage } = useChat();
 
