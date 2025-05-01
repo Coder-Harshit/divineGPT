@@ -110,7 +110,6 @@ class MicroserviceApi {
           lang,
         }),
       });
-      console.log(response);
 
       if (!response.ok) {
         throw new Error(`Text-to-speech API call failed with status: ${response.status}`);

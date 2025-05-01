@@ -1,18 +1,28 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, LoaderCircle } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, LoaderCircle, ChevronsRight, ChevronsLeft } from 'lucide-react';
 import Button from './Button';
 import { microserviceApi } from '@/services/microserviceApi';
 import { toast } from '@/hooks/use-toast';
+import { removeEmojis } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AudioControllerProps {
   text: string;
   className?: string;
 }
 
+const playbackSpeeds = [0.75, 1, 1.25, 1.5, 2];
+
 const AudioController = ({ text, className = '' }: AudioControllerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -45,14 +55,19 @@ const AudioController = ({ text, className = '' }: AudioControllerProps) => {
       return;
     }
 
-    if (!isLoading) {
+    if (!isLoading && !audioRef.current) {
       setIsLoading(true);
       try {
-        const audioBlob = await microserviceApi.textToSpeech(text, 'en');
+        const cleanedText = removeEmojis(text);
+        if (!cleanedText) {
+          throw new Error("No text content to speak after removing emojis.");
+        }
+        const audioBlob = await microserviceApi.textToSpeech(cleanedText, 'en');
         const audioUrl = URL.createObjectURL(audioBlob);
 
         const newAudio = new Audio(audioUrl);
         newAudio.muted = isMuted;
+        newAudio.playbackRate = playbackRate;
 
         newAudio.oncanplaythrough = async () => {
           try {
@@ -83,8 +98,13 @@ const AudioController = ({ text, className = '' }: AudioControllerProps) => {
 
         audioRef.current = newAudio;
 
-      } catch (fetchError) {
-        console.error('Error fetching audio:', fetchError);
+      } catch (fetchError: any) {
+        console.error('Error fetching or preparing audio:', fetchError);
+        toast({
+          title: "Audio Error",
+          description: fetchError.message || "Could not load audio.",
+          variant: "destructive",
+        });
         setIsLoading(false);
         setIsPlaying(false);
       }
@@ -96,6 +116,13 @@ const AudioController = ({ text, className = '' }: AudioControllerProps) => {
     setIsMuted(newMutedState);
     if (audioRef.current) {
       audioRef.current.muted = newMutedState;
+    }
+  };
+
+  const handleSpeedChange = (speed: number) => {
+    setPlaybackRate(speed);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = speed;
     }
   };
 
@@ -117,6 +144,29 @@ const AudioController = ({ text, className = '' }: AudioControllerProps) => {
         )}
         <span className="sr-only">{isPlaying ? 'Pause' : 'Play'}</span>
       </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-foreground/70 hover:text-foreground w-10 text-xs"
+            disabled={!audioRef.current && !isLoading}
+          >
+            {playbackRate}x
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="min-w-[4rem]">
+          {playbackSpeeds.map((speed) => (
+            <DropdownMenuItem
+              key={speed}
+              onClick={() => handleSpeedChange(speed)}
+              className={`text-xs ${playbackRate === speed ? 'bg-accent' : ''}`}
+            >
+              {speed}x
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <Button
         variant="ghost"
         size="sm"
