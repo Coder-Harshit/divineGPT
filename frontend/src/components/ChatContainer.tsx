@@ -154,9 +154,8 @@ const ChatContainer = ({ onToggleHistory, showHistory, conversationId, onConvers
             </div>
           ) : (
             messages.map(message => (
-              <div className="snap-start">
+              <div key={message.id} className="snap-start">
                 <ChatMessage
-                  key={message.id}
                   role={message.role}
                   content={message.content}
                   timestamp={message.timestamp}
