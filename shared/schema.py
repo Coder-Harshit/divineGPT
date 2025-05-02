@@ -33,9 +33,10 @@ class LLMServiceResponse(BaseModel):
 
 class RAGServiceQuery(BaseModel):
     query: str
-    user_type: Optional[str] = Field("genz", description="Type of user (e.g. genz, mature, neutral")
-    history: Optional[List[MessageSchema]] = Field(None, description="Conversation history with the user")
-    previous_summary: Optional[str] = Field(None, description="Previous summary of the conversation")
+    user_type: str = "neutral"
+    history: Optional[List[MessageSchema]] = None
+    previous_summary: Optional[str] = None
+    scripture: str = "all"  # Options: "gita", "ramayana", "all"
 
 class LLMStructuredResponse(BaseModel):
     shloka: str = Field(..., description="Sanskrit shloka that addresses the user's concern")

@@ -9,6 +9,7 @@ interface AskApiPayload {
   user_type: string;
   history?: { role: string; content: string }[]; // Match MessageSchema
   previous_summary?: string; // Add previous_summary
+  scripture?: string; // Specify the scripture if needed
 }
 
 // Define the structure received from the backend (matches shared/schema.py RAGServiceResponse)
@@ -88,6 +89,7 @@ class MicroserviceApi {
     userType: string,
     history: Message[] = [],
     previousSummary: string = '',
+    scripture: string = 'all'
   ): Promise<DivineResponse> {
     const service = this.useGateway ? 'GATEWAY' : 'LLM_SERVICE';
     const endpoint = this.useGateway ? 'ASK' : 'ASK';
@@ -102,6 +104,7 @@ class MicroserviceApi {
       user_type: userType,
       history: formattedHistory,
       previous_summary: previousSummary, // Include previousSummary in payload
+      scripture: scripture
     };
 
     try {

@@ -3,15 +3,26 @@ from shared.schema import MessageSchema, RetrievedShloka
 
 DEFAULT_USER_TYPE = "neutral"
 
+# Update format_shloka_for_context to include scripture information
+
 def format_shloka_for_context(shloka_payload: RetrievedShloka) -> str:
     payload_dict = shloka_payload if isinstance(shloka_payload, dict) else shloka_payload.model_dump()
     sanskrit = payload_dict.get("shloka", "N/A")
     transliteration = payload_dict.get("transliteration", "N/A")
     meaning = payload_dict.get("eng_meaning", "N/A")
-#     return f"""Shloka (Sanskrit): {shloka_payload['shloka']}
-# Transliteration: {shloka_payload['transliteration'] or 'N/A'}
-# Meaning (English): {shloka_payload['eng_meaning'] or 'N/A'}"""
-    return f"""Shloka (Sanskrit): {sanskrit}
+    scripture = payload_dict.get("scripture", "bhagavad_gita")
+    
+    # Format scripture name for display
+    scripture_display = "Bhagavad Gita" if scripture == "bhagavad_gita" else "Valmiki Ramayana"
+    
+    # Add location information based on scripture
+    if scripture == "bhagavad_gita":
+        location = f"Chapter {payload_dict.get('chapter', 'N/A')}, Verse {payload_dict.get('verse', 'N/A')}"
+    else:
+        location = f"Book {payload_dict.get('book', 'N/A')}, Chapter {payload_dict.get('chapter', 'N/A')}, Verse {payload_dict.get('verse', 'N/A')}"
+    
+    return f"""Scripture: {scripture_display} ({location})
+Shloka (Sanskrit): {sanskrit}
 Transliteration: {transliteration}
 Meaning (English): {meaning or 'N/A'}"""
 

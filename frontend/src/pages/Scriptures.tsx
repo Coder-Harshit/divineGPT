@@ -199,10 +199,10 @@ const Scriptures = () => {
                     <p className="text-muted-foreground mb-4">
                       {scripture.description}
                     </p>
-                    
+{/*                     
                     <Button variant="ghost" className="text-divine-600 dark:text-divine-400">
                       Explore Scripture
-                    </Button>
+                    </Button> */}
                   </div>
                 ))
               ) : (

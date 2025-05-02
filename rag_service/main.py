@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException
 from shared.schema import RAGServiceQuery, RAGServiceResponse, LLMStructuredResponse, RetrievedShloka
 from shared.config import RAG_SERVICE_PORT, LLM_SERVICE_URL, QDRANT_URL, QDRANT_API_KEY, EMBEDDING_MODEL
 from shared.logger import get_logger
-from rag_service.retriever import GitaRetriever
+from rag_service.retriever import ScriptureRetriever
 from rag_service.prompt_builder import build_prompt, format_shloka_for_context
 from fastapi.middleware.cors import CORSMiddleware
 from rag_service.prompt_builder import build_simple_prompt
@@ -45,10 +45,10 @@ logger.debug(f"EMBEDDING_MODEL: {EMBEDDING_MODEL}")
 
 # --- Dependency Injection ---
 try:
-    shloka_retriever = GitaRetriever()
-    logger.info("GitaRetriever initialized successfully.")
+    shloka_retriever = ScriptureRetriever()
+    logger.info("ScriptureRetriever initialized successfully.")
 except Exception as e:
-    logger.error(f"Error initializing GitaRetriever: {e}")
+    logger.error(f"Error initializing ScriptureRetriever: {e}")
     shloka_retriever = None
 
 # --- Constants ---
@@ -236,7 +236,11 @@ async def ask_question(user_query: RAGServiceQuery):
 
     logger.info("Performing RAG.")
     try:
-        retrieved_payloads = shloka_retriever.get_relevant_shloka(user_query.query, top_k=1)
+        retrieved_payloads = shloka_retriever.get_relevant_shloka(
+            user_query.query, 
+            scripture=user_query.scripture,  # Pass the scripture preference
+            top_k=1
+        )
     except Exception as e:
         logger.error(f"Error retrieving shlokas: {e}")
         raise HTTPException(status_code=500, detail="Error retrieving shlokas.")
